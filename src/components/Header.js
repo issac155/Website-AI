@@ -56,6 +56,7 @@ const Header = () => {
               <li key={index}>
                 <NavLink
                   to={link.path}
+                  end={link.path === "/"}
                   onClick={closeMenu}
                   className={({ isActive }) => (isActive ? "active-link" : "")}
                 >
@@ -63,6 +64,7 @@ const Header = () => {
                 </NavLink>
               </li>
             ))}
+
             <Link to="/contact" className="nav-cta" onClick={closeMenu}>
               Get Quote
             </Link>

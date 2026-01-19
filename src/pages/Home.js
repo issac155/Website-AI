@@ -7,6 +7,7 @@ import Projects from "../components/Projects";
 import Partners from "../components/Partners";
 import CTA from "../components/CTA";
 import WhyChooseUs from "../components/WhyChooseUs";
+import StrategicAlliances from "../components/StrategicAlliances";
 
 const Home = () => {
   useEffect(() => {
@@ -34,12 +35,13 @@ const Home = () => {
   return (
     <>
       <Hero />
-      <WhyChooseUs />
-      <Stats />
       <Services />
       <Values />
+      <Stats />
       <Projects />
       <Partners />
+      <StrategicAlliances />
+
       <CTA />
     </>
   );

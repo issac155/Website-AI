@@ -25,7 +25,7 @@ const Services = () => {
       icon: FaBuilding,
       title: "Facility Management",
       description:
-        "Comprehensive MEP & ELV facility management ensuring reliable building operations, preventive maintenance, and 24/7 support with SLA-driven response.",
+        "Comprehensive MEP & ELV facility management ensuring reliable building operations, preventive maintenance, and guaranteed 24/7 support with SLA-driven response.",
       features: [
         "Preventive Maintenance",
         "24/7 Emergency Support",

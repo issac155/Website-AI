@@ -9,6 +9,7 @@ import {
   FaPhoneAlt,
   FaEnvelope,
 } from "react-icons/fa";
+import { Link, NavLink } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -46,29 +47,33 @@ const Footer = () => {
             <h3 className="footer-heading">Quick Links</h3>
             <ul>
               <li>
-                <a href="#home">
-                  <i className="fas fa-chevron-right"></i> Home
-                </a>
+                <NavLink to="/" end>
+                  <FaChevronRight /> Home
+                </NavLink>
               </li>
+
               <li>
-                <a href="#about">
-                  <i className="fas fa-chevron-right"></i> About Us
-                </a>
+                <NavLink to="/about">
+                  <FaChevronRight /> About Us
+                </NavLink>
               </li>
+
               <li>
-                <a href="#services">
-                  <i className="fas fa-chevron-right"></i> Services
-                </a>
+                <NavLink to="/services">
+                  <FaChevronRight /> Services
+                </NavLink>
               </li>
+
               <li>
-                <a href="#projects">
-                  <i className="fas fa-chevron-right"></i> Projects
-                </a>
+                <NavLink to="/projects">
+                  <FaChevronRight /> Projects
+                </NavLink>
               </li>
+
               <li>
-                <a href="#contact">
-                  <i className="fas fa-chevron-right"></i> Contact
-                </a>
+                <NavLink to="/contact">
+                  <FaChevronRight /> Contact
+                </NavLink>
               </li>
             </ul>
           </div>
@@ -117,8 +122,8 @@ const Footer = () => {
 
         <div className="copyright">
           <p>
-            &copy; 2024 AI Mavarid Services & Maintenance SPC. All rights
-            reserved. | Build By Brilliance
+            &copy; 2025 AI Mavarid Services & Maintenance SPC. All rights
+            reserved. | Sea Sense
           </p>
         </div>
       </div>

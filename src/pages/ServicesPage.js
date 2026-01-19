@@ -91,6 +91,25 @@ const ServicesPage = () => {
       ],
       link: "/services/project-management",
     },
+    {
+      title: "ELV Services",
+      icon: <FaTasks />,
+      description: "Advanced integration systems.",
+      features: [
+        "Honeywell - USA",
+        "Alerton - USA",
+        "Process Measuring Instruments & Controls CBRO - India",
+        "HIKVISION",
+      ],
+      link: "/services/project-management",
+    },
+    {
+      title: "EV Stations",
+      icon: <FaTasks />,
+      description: "Charging stations with Payment Gateways",
+      features: ["Sino - China", "YoCharge - India"],
+      link: "/services/project-management",
+    },
   ];
 
   return (
@@ -135,9 +154,9 @@ const ServicesPage = () => {
                     ))}
                   </ul>
 
-                  <Link to={service.link} className="service-link">
+                  {/* <Link to={service.link} className="service-link">
                     Learn More <i className="fas fa-arrow-right"></i>
-                  </Link>
+                  </Link> */}
                 </div>
               ))}
             </div>

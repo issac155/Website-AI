@@ -164,7 +164,10 @@ header.scrolled {
 .nav-cta::before {
   display: none;
 }
-
+.nav-links a.active-link {
+  color: #2e8b57; /* highlight color */
+  font-weight: 600;
+}
 .hamburger {
   display: none;
   flex-direction: column;
@@ -686,7 +689,7 @@ header.scrolled {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: rgba(255, 255, 255, 0.8);
+  /* color: rgba(255, 255, 255, 0.8); */
 }
 
 .project-features i {
@@ -1619,5 +1622,183 @@ footer {
   .achievement-card {
     padding: 1rem;
     transform: scale(0.8);
+  }
+}
+
+.strategic-alliances {
+  padding: 6rem 0;
+  background: linear-gradient(135deg, #f8faf7 0%, #ffffff 100%);
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.section-header h2 {
+  font-size: 2.5rem;
+  color: var(--primary-dark);
+  margin-bottom: 1rem;
+}
+
+.section-header p {
+  color: var(--text-light);
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.alliance-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+.alliance-card {
+  background: white;
+  border-radius: var(--border-radius);
+  padding: 2.5rem;
+  box-shadow: var(--shadow-md);
+  transition: var(--transition);
+  border: 1px solid transparent;
+}
+
+.alliance-card:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent-gold);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.alliance-icon {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(
+    135deg,
+    rgba(46, 139, 87, 0.1) 0%,
+    rgba(212, 175, 55, 0.1) 100%
+  );
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  color: var(--primary-green);
+}
+
+.card-header h3 {
+  font-size: 1.4rem;
+  color: var(--primary-dark);
+  margin: 0;
+}
+
+.alliance-description {
+  color: var(--text-light);
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+.benefits-list h4 {
+  color: var(--primary-dark);
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.benefits-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.benefits-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.5rem 0;
+  color: var(--text-dark);
+}
+
+.benefits-list i {
+  color: var(--primary-green);
+  font-size: 0.9rem;
+}
+
+/* Advantages Section */
+.advantages-section {
+  padding-top: 4rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.advantages-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.advantage-card {
+  text-align: center;
+  padding: 2.5rem 2rem;
+  background: white;
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.advantage-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+}
+
+.advantage-icon {
+  width: 70px;
+  height: 70px;
+  background: linear-gradient(
+    135deg,
+    rgba(46, 139, 87, 0.1) 0%,
+    rgba(212, 175, 55, 0.1) 100%
+  );
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  font-size: 2rem;
+  color: var(--primary-green);
+  transition: var(--transition);
+}
+
+.advantage-card:hover .advantage-icon {
+  background: var(--gradient-accent);
+  color: white;
+  transform: scale(1.1);
+}
+
+.advantage-card h3 {
+  font-size: 1.3rem;
+  color: var(--primary-dark);
+  margin-bottom: 1rem;
+}
+
+.advantage-card p {
+  color: var(--text-light);
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .alliance-cards,
+  .advantages-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card-header {
+    flex-direction: column;
+    text-align: center;
   }
 }

@@ -1,5 +1,8 @@
 import React from "react";
-
+import mainImage from "../Images/Hero2.jpg";
+import electricalImage from "../../src/Images/Hero4.jpg";
+import lightingImage from "../Images/Hero1.jpg";
+import smartBuildingImage from "../Images/Hero3.jpg";
 const Hero = () => {
   return (
     <section className="hero" id="home">
@@ -55,7 +58,7 @@ const Hero = () => {
             <div className="hero-image-wrapper">
               {/* Main Engineering Image */}
               <img
-                src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                src={mainImage}
                 alt="Modern MEP Engineering Solutions in Oman"
                 className="hero-main-image"
               />
@@ -64,7 +67,7 @@ const Hero = () => {
               <div className="image-grid">
                 <div className="grid-item grid-item-1">
                   <img
-                    src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+                    src={electricalImage}
                     alt="Electrical Systems Installation"
                   />
                   <div className="grid-overlay">
@@ -73,20 +76,14 @@ const Hero = () => {
                   </div>
                 </div>
                 <div className="grid-item grid-item-2">
-                  <img
-                    src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
-                    alt="HVAC Engineering"
-                  />
+                  <img src={electricalImage} alt="HVAC Engineering" />
                   <div className="grid-overlay">
                     <i className="fas fa-wind"></i>
                     <span>HVAC</span>
                   </div>
                 </div>
                 <div className="grid-item grid-item-3">
-                  <img
-                    src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
-                    alt="Lighting Design"
-                  />
+                  <img src={lightingImage} alt="Lighting Design" />
                   <div className="grid-overlay">
                     <i className="fas fa-lightbulb"></i>
                     <span>Lighting</span>
@@ -94,7 +91,7 @@ const Hero = () => {
                 </div>
                 <div className="grid-item grid-item-4">
                   <img
-                    src="https://images.unsplash.com/photo-1531834685032-c34bf0d84c77?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+                    src={smartBuildingImage}
                     alt="Smart Building Solutions"
                   />
                   <div className="grid-overlay">

@@ -13,12 +13,16 @@ import EngineeringApproach from "./pages/EngineeringApproach";
 import FacilityManagement from "./pages/FacilityManagement";
 import LightingSolarSolutions from "./pages/LightingSolarSolutions";
 import "./styles/App.css";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   return (
     <Router>
       <div className="App">
+        <ScrollToTop />
+
         <Header />
+
         <main>
           <Routes>
             <Route path="/" element={<Home />} />

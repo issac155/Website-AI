@@ -81,6 +81,10 @@ const About = () => {
       <section className="page-section light-bg">
         <div className="container">
           <div className="page-content">
+            <div className="page-header">
+              <div className="section-subtitle">OUR GUIDING PRINCIPLES</div>
+              <h2 className="section-title">Vision & Mission</h2>
+            </div>
             <div className="values-grid">
               <div className="value-card">
                 <div className="value-icon">
