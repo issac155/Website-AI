@@ -1802,3 +1802,8 @@ footer {
     text-align: center;
   }
 }
+.logo-image {
+  width: 160px;
+  height: auto;
+  margin-right: 10px;
+}

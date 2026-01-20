@@ -1,5 +1,14 @@
 import React from "react";
 // import "./StrategicAlliances.css";
+import {
+  FaWaveSquare,
+  FaSolarPanel,
+  FaRobot,
+  FaLayerGroup,
+  FaMicrochip,
+  FaUserGraduate,
+  FaCheckCircle,
+} from "react-icons/fa";
 
 const StrategicAlliances = () => {
   const alliances = [
@@ -12,7 +21,7 @@ const StrategicAlliances = () => {
         "International compliance",
         "Real-time monitoring",
       ],
-      icon: "fas fa-wave-square",
+      icon: FaWaveSquare,
     },
     {
       name: "Kauther Energy & Services LLC",
@@ -23,14 +32,14 @@ const StrategicAlliances = () => {
         "Energy storage",
         "Grid integration",
       ],
-      icon: "fas fa-solar-panel",
+      icon: FaSolarPanel,
     },
     {
       name: "Core Vision International SPC",
       description:
         "AI integration for smart grid optimization and energy management.",
       benefits: ["AI analytics", "Smart automation", "IoT platforms"],
-      icon: "fas fa-robot",
+      icon: FaRobot,
     },
   ];
 
@@ -39,17 +48,17 @@ const StrategicAlliances = () => {
       title: "Enhanced Capabilities",
       description:
         "Combine strengths and resources for expanded service offerings.",
-      icon: "fas fa-layer-group",
+      icon: FaLayerGroup,
     },
     {
       title: "Technology Access",
       description: "Access cutting-edge technologies and proprietary systems.",
-      icon: "fas fa-microchip",
+      icon: FaMicrochip,
     },
     {
       title: "Specialized Expertise",
       description: "Domain expertise for complex projects with precision.",
-      icon: "fas fa-user-graduate",
+      icon: FaUserGraduate,
     },
   ];
 
@@ -70,7 +79,7 @@ const StrategicAlliances = () => {
             <div key={index} className="alliance-card">
               <div className="card-header">
                 <div className="alliance-icon">
-                  <i className={alliance.icon}></i>
+                  <alliance.icon size={32} />
                 </div>
                 <h3>{alliance.name}</h3>
               </div>
@@ -82,7 +91,7 @@ const StrategicAlliances = () => {
                 <ul>
                   {alliance.benefits.map((benefit, idx) => (
                     <li key={idx}>
-                      <i className="fas fa-check-circle"></i>
+                      <FaCheckCircle className="check-icon" />
                       {benefit}
                     </li>
                   ))}
@@ -99,7 +108,7 @@ const StrategicAlliances = () => {
             {advantages.map((advantage, index) => (
               <div key={index} className="advantage-card">
                 <div className="advantage-icon">
-                  <i className={advantage.icon}></i>
+                  <advantage.icon size={28} />
                 </div>
                 <h3>{advantage.title}</h3>
                 <p>{advantage.description}</p>

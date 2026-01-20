@@ -1,6 +1,8 @@
 import React from "react";
 import mainImage from "../Images/Hero2.jpg";
-import electricalImage from "../../src/Images/Hero4.jpg";
+import electricalImage from "../../src/Images/Hero5.jpg";
+import hvcImage from "../../src/Images/Hero4.jpg";
+
 import lightingImage from "../Images/Hero1.jpg";
 import smartBuildingImage from "../Images/Hero3.jpg";
 const Hero = () => {
@@ -39,11 +41,11 @@ const Hero = () => {
             {/* Stats Section */}
             <div className="hero-stats">
               <div className="stat-item">
-                <span className="stat-number">200+</span>
+                <span className="stat-number">100+</span>
                 <span className="stat-label">Projects Completed</span>
               </div>
               <div className="stat-item">
-                <span className="stat-number">98%</span>
+                <span className="stat-number">99%</span>
                 <span className="stat-label">Client Satisfaction</span>
               </div>
               <div className="stat-item">
@@ -76,7 +78,7 @@ const Hero = () => {
                   </div>
                 </div>
                 <div className="grid-item grid-item-2">
-                  <img src={electricalImage} alt="HVAC Engineering" />
+                  <img src={hvcImage} alt="HVAC Engineering" />
                   <div className="grid-overlay">
                     <i className="fas fa-wind"></i>
                     <span>HVAC</span>

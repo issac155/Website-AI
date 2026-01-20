@@ -18,7 +18,7 @@ const CompanyOverview = () => {
             <div className="overview-content">
               <h2>Riyada-Registered SME Since 2018</h2>
               <p>
-                AI Mavarid Services & Maintenance SPC is a technology-driven
+                AL Mawarid Services & Maintenance SPC is a technology-driven
                 engineering firm specializing in MEP, ELV, and lighting
                 solutions that redefine modern spaces across Oman.
               </p>

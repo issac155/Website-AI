@@ -82,11 +82,11 @@ const Partners = () => {
       color: "#003366",
     },
     {
-      name: "Tesla",
+      name: "Castaldi",
       logo: (
         <svg viewBox="0 0 100 40" className="logo-svg">
           <text x="25" y="25" className="logo-text tesla">
-            Tesla
+            Castaldi
           </text>
         </svg>
       ),

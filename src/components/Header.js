@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
+import logo from "../Images/LOGO.png";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -34,12 +35,19 @@ const Header = () => {
     <header id="header" className={isScrolled ? "scrolled" : ""}>
       <div className="container">
         <div className="header-content">
-          <Link to="/" className="logo">
+          {/* <Link to="/" className="logo">
             <div className="logo-icon">AM</div>
             <div className="logo-text">
               <span className="logo-main">AI Mavarid</span>
               <span className="logo-tagline">Engineering Excellence</span>
             </div>
+          </Link> */}
+          <Link to="/" className="logo">
+            <img src={logo} alt="AL Mawarid Logo" className="logo-image" />
+            {/* <div className="logo-text">
+              <span className="logo-main">AL Mawarid</span>
+              <span className="logo-tagline">Engineering Excellence</span>
+            </div> */}
           </Link>
 
           <button

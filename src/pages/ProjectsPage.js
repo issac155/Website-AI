@@ -146,7 +146,7 @@ const ProjectsPage = () => {
                 <div className="testimonial-content">
                   <i className="fas fa-quote-left"></i>
                   <p>
-                    AI Mavarid delivered exceptional MEP solutions for our
+                    AL Mawarid delivered exceptional MEP solutions for our
                     cancer center. Their attention to detail and technical
                     expertise ensured all medical systems function perfectly.
                   </p>

@@ -1,15 +1,15 @@
 import React from "react";
 import {
-  FaLinkedinIn,
-  FaTwitter,
-  FaInstagram,
-  FaYoutube,
+  //   FaLinkedinIn,
+  //   FaTwitter,
+  //   FaInstagram,
+  //   FaYoutube,
   FaChevronRight,
   FaMapMarkerAlt,
   FaPhoneAlt,
   FaEnvelope,
 } from "react-icons/fa";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -19,7 +19,7 @@ const Footer = () => {
           <div className="footer-about">
             <a href="#home" className="footer-logo">
               <div className="footer-logo-icon">AM</div>
-              <div className="footer-logo-text">AI Mavarid</div>
+              <div className="footer-logo-text">AL Mawarid</div>
             </a>
             <p>
               Providing reliable and quality-driven MEP and ELV solutions in
@@ -27,7 +27,7 @@ const Footer = () => {
               solutions to deliver exceptional value.
             </p>
 
-            <div className="social-links">
+            {/* <div className="social-links">
               <a href="#">
                 <FaLinkedinIn />
               </a>
@@ -40,7 +40,7 @@ const Footer = () => {
               <a href="#">
                 <FaYoutube />
               </a>
-            </div>
+            </div> */}
           </div>
 
           <div className="footer-links">
@@ -69,7 +69,11 @@ const Footer = () => {
                   <FaChevronRight /> Projects
                 </NavLink>
               </li>
-
+              <li>
+                <NavLink to="/partners">
+                  <FaChevronRight /> Partners
+                </NavLink>
+              </li>
               <li>
                 <NavLink to="/contact">
                   <FaChevronRight /> Contact
@@ -122,7 +126,7 @@ const Footer = () => {
 
         <div className="copyright">
           <p>
-            &copy; 2025 AI Mavarid Services & Maintenance SPC. All rights
+            &copy; 2025 AL Mawarid Services & Maintenance SPC. All rights
             reserved. | Sea Sense
           </p>
         </div>

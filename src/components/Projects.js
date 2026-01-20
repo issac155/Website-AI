@@ -42,7 +42,10 @@ const Projects = () => {
       <div className="container">
         <div className="section-header">
           <div className="section-subtitle">PORTFOLIO</div>
-          <h2 className="section-title section-title-light">
+          <h2
+            className="section-title section-title-light"
+            style={{ color: "rgba(255,255,255,0.8)" }}
+          >
             Notable Project Highlights
           </h2>
           <p

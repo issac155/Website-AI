@@ -15,6 +15,8 @@ import {
   FaHandshake,
   FaLeaf,
   FaCalendarCheck,
+  FaCertificate,
+  FaFileDownload,
 } from "react-icons/fa";
 
 const ServicesPage = () => {
@@ -112,6 +114,32 @@ const ServicesPage = () => {
     },
   ];
 
+  const certificates = [
+    {
+      id: 1,
+      title: "SME Registration Certificate",
+      issuer: "SME Development Authority - Oman",
+      issueDate: "2023",
+      expiryDate: "2024",
+      description: "Registered Small and Medium Enterprise (SME) with Riyada",
+      registrationNo: "CR & Riyada Copy",
+      holderName: "Al Mawarid Services and Maintenance",
+      holderPerson: "Safiya Nasser Al Busaidiyah",
+      fileUrl: "/certificates/cr_riyada_copy.pdf", // Path to your PDF file
+      icon: <FaCertificate />,
+    },
+    // Add more certificates here if needed
+  ];
+
+  const handleDownload = (fileUrl, fileName) => {
+    // Create a temporary link element
+    const link = document.createElement("a");
+    link.href = fileUrl;
+    link.download = fileName || "certificate.pdf";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
   return (
     <div className="page-container">
       <div className="page-hero">
@@ -159,6 +187,110 @@ const ServicesPage = () => {
                   </Link> */}
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
+      </section>
+      {/* Certificates Section */}
+      <section className="certificates-section">
+        <div className="container">
+          <div className="page-content">
+            <div className="page-header">
+              <div className="section-subtitle">
+                CREDENTIALS & REGISTRATIONS
+              </div>
+              <h2 className="section-title">Certificates & Accreditations</h2>
+              <p className="section-desc">
+                Official certifications and registrations demonstrating our
+                compliance and commitment to quality standards.
+              </p>
+            </div>
+
+            <div className="certificates-grid">
+              {certificates.map((cert) => (
+                <div className="certificate-card" key={cert.id}>
+                  <div className="certificate-header">
+                    <div className="certificate-icon">{cert.icon}</div>
+                    <div className="certificate-title">
+                      <h3>{cert.title}</h3>
+                      <span className="certificate-issuer">
+                        <i className="fas fa-building"></i> {cert.issuer}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="certificate-details">
+                    <div className="detail-row">
+                      <div className="detail-label">
+                        <i className="fas fa-file-alt"></i> Registration No:
+                      </div>
+                      <div className="detail-value">{cert.registrationNo}</div>
+                    </div>
+
+                    <div className="detail-row">
+                      <div className="detail-label">
+                        <i className="fas fa-user"></i> Company:
+                      </div>
+                      <div className="detail-value">{cert.holderName}</div>
+                    </div>
+
+                    <div className="detail-row">
+                      <div className="detail-label">
+                        <i className="fas fa-user-tie"></i> Holder:
+                      </div>
+                      <div className="detail-value">{cert.holderPerson}</div>
+                    </div>
+
+                    <div className="detail-row">
+                      <div className="detail-label">
+                        <i className="fas fa-calendar-alt"></i> Issue Date:
+                      </div>
+                      <div className="detail-value">{cert.issueDate}</div>
+                    </div>
+
+                    <div className="detail-row">
+                      <div className="detail-label">
+                        <i className="fas fa-calendar-times"></i> Expiry Date:
+                      </div>
+                      <div className="detail-value">{cert.expiryDate}</div>
+                    </div>
+                  </div>
+
+                  <div className="certificate-description">
+                    <p>{cert.description}</p>
+                  </div>
+
+                  <div className="certificate-actions">
+                    <button
+                      className="download-btn"
+                      onClick={() => handleDownload(cert.fileUrl, cert.title)}
+                    >
+                      <FaFileDownload /> Download Certificate
+                    </button>
+                    <button
+                      className="view-btn"
+                      onClick={() => window.open(cert.fileUrl, "_blank")}
+                    >
+                      <i className="fas fa-eye"></i> View Online
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="certificates-note">
+              <div className="note-icon">
+                <i className="fas fa-shield-alt"></i>
+              </div>
+              <div className="note-content">
+                <h4>Compliance & Quality Assurance</h4>
+                <p>
+                  Our certifications demonstrate compliance with local
+                  regulations and international quality standards. We maintain
+                  all necessary registrations to operate legally and deliver
+                  professional services.
+                </p>
+              </div>
             </div>
           </div>
         </div>
