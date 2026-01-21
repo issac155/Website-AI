@@ -19,7 +19,7 @@ const Hero = () => {
             <h1>
               <span className="hero-highlight">Build By Brilliance</span>
               <br />
-              Intelligent Engineering Solutions for Modern Oman
+              Innovative Engineering Solutions for Modern Oman
             </h1>
 
             <p>
@@ -67,6 +67,13 @@ const Hero = () => {
 
               {/* Secondary Images - Grid */}
               <div className="image-grid">
+                <div className="grid-item grid-item-3">
+                  <img src={lightingImage} alt="Lighting Design" />
+                  <div className="grid-overlay">
+                    <i className="fas fa-lightbulb"></i>
+                    <span>Lighting</span>
+                  </div>
+                </div>
                 <div className="grid-item grid-item-1">
                   <img
                     src={electricalImage}
@@ -81,16 +88,10 @@ const Hero = () => {
                   <img src={hvcImage} alt="HVAC Engineering" />
                   <div className="grid-overlay">
                     <i className="fas fa-wind"></i>
-                    <span>HVAC</span>
+                    <span>Mechanical</span>
                   </div>
                 </div>
-                <div className="grid-item grid-item-3">
-                  <img src={lightingImage} alt="Lighting Design" />
-                  <div className="grid-overlay">
-                    <i className="fas fa-lightbulb"></i>
-                    <span>Lighting</span>
-                  </div>
-                </div>
+
                 <div className="grid-item grid-item-4">
                   <img
                     src={smartBuildingImage}

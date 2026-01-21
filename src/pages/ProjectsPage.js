@@ -7,7 +7,7 @@ const ProjectsPage = () => {
       category: "Government",
       title: "Ministry of Defense Facilities",
       description:
-        "Complete MEP and ELV solutions for Adam Airbase, Khasab, and Mussannah Airbase.",
+        "MEP and ELV solutions for Adam Airbase, Khasab, and Mussannah Airbase.",
       features: [
         "Advanced Security Systems",
         "Integrated ELV Solutions",
@@ -146,9 +146,11 @@ const ProjectsPage = () => {
                 <div className="testimonial-content">
                   <i className="fas fa-quote-left"></i>
                   <p>
-                    AL Mawarid delivered exceptional MEP solutions for our
-                    cancer center. Their attention to detail and technical
-                    expertise ensured all medical systems function perfectly.
+                    The Engineering team delivered exceptional services within
+                    the agreed timeline, and the systems are fully functional in
+                    compliance with international standards. We sincerely
+                    appreciate their expertise, commitment, and dedication to
+                    the successful completion of the project.
                   </p>
                 </div>
                 <div className="testimonial-author">
@@ -185,7 +187,7 @@ const ProjectsPage = () => {
           <div className="page-content">
             <div className="page-header">
               <div className="section-subtitle">FACILITY MANAGEMENT</div>
-              <h2 className="section-title">Ongoing Maintenance Services</h2>
+              <h2 className="section-title"> Maintenance Services</h2>
               <p className="section-desc">
                 Our comprehensive facility management services ensure reliable
                 building operations and optimal performance.

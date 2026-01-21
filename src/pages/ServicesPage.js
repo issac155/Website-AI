@@ -18,6 +18,7 @@ import {
   FaCertificate,
   FaFileDownload,
 } from "react-icons/fa";
+import logoser from "../Images/Logo1.png";
 
 const ServicesPage = () => {
   const services = [
@@ -120,7 +121,7 @@ const ServicesPage = () => {
       title: "SME Registration Certificate",
       issuer: "SME Development Authority - Oman",
       issueDate: "2023",
-      expiryDate: "2024",
+      expiryDate: "2026",
       description: "Registered Small and Medium Enterprise (SME) with Riyada",
       registrationNo: "CR & Riyada Copy",
       holderName: "Al Mawarid Services and Maintenance",
@@ -210,7 +211,10 @@ const ServicesPage = () => {
               {certificates.map((cert) => (
                 <div className="certificate-card" key={cert.id}>
                   <div className="certificate-header">
-                    <div className="certificate-icon">{cert.icon}</div>
+                    <div className="certificate-icon">
+                      {/* {cert.icon} */}
+                      <img src={logoser} />
+                    </div>
                     <div className="certificate-title">
                       <h3>{cert.title}</h3>
                       <span className="certificate-issuer">

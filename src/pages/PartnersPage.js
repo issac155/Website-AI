@@ -30,8 +30,8 @@ const PartnersPage = () => {
   const strategicAlliances = [
     { name: "Frequency International LLC", type: "Technology Partner" },
     { name: "Kauther Energy & Services LLC", type: "Energy Solutions" },
-    { name: "Core Vision International SPC", type: "Strategic Partner" },
-    { name: "Towards AI", type: "Technology Innovation" },
+    { name: "Core Vision International SPC", type: "Towards AI" },
+    // { name: "Towards AI", type: "Technology Innovation" },
   ];
 
   return (

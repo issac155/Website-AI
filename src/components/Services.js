@@ -77,9 +77,9 @@ const Services = () => {
                 ))}
               </ul>
 
-              <a href="#" className="service-link">
+              {/* <a href="#" className="service-link">
                 Explore Service <i className="fas fa-arrow-right"></i>
-              </a>
+              </a> */}
             </div>
           ))}
         </div>

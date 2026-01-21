@@ -14,31 +14,27 @@ const StrategicAlliances = () => {
   const alliances = [
     {
       name: "Frequency International LLC",
-      description:
-        "Strategic alliance for frequency management and power stability solutions.",
+
       benefits: [
-        "Advanced frequency control",
-        "International compliance",
-        "Real-time monitoring",
+        "Strategic alliance for ELV Integrations with International Clients",
+        "Custom built Turnkey solutions for security systems & IT solutions",
+        // "Real-time monitoring",
       ],
       icon: FaWaveSquare,
     },
     {
       name: "Kauther Energy & Services LLC",
-      description:
-        "JV specializing in renewable energy integration and sustainable power solutions.",
+
       benefits: [
-        "Solar-wind hybrid systems",
-        "Energy storage",
-        "Grid integration",
+        "Strategic alliance for Solar and Energy Management Solutions",
+        "Floating Solar, MMS Providers",
       ],
       icon: FaSolarPanel,
     },
     {
       name: "Core Vision International SPC",
-      description:
-        "AI integration for smart grid optimization and energy management.",
-      benefits: ["AI analytics", "Smart automation", "IoT platforms"],
+
+      benefits: ["Strategic alliance for AI Implementation & Automation"],
       icon: FaRobot,
     },
   ];
@@ -84,14 +80,14 @@ const StrategicAlliances = () => {
                 <h3>{alliance.name}</h3>
               </div>
 
-              <p className="alliance-description">{alliance.description}</p>
+              {/* <p className="alliance-description">{alliance.description}</p> */}
 
               <div className="benefits-list">
-                <h4>Key Benefits:</h4>
+                {/* <h4>Key Benefits:</h4> */}
                 <ul>
                   {alliance.benefits.map((benefit, idx) => (
                     <li key={idx}>
-                      <FaCheckCircle className="check-icon" />
+                      {/* <FaCheckCircle className="check-icon" /> */}
                       {benefit}
                     </li>
                   ))}

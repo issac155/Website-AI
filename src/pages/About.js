@@ -136,7 +136,7 @@ const About = () => {
               <div className="team-card">
                 <div className="team-img"></div>
                 <div className="team-info">
-                  <h4>Al Yaqdhan</h4>
+                  <h4>AlYaqdhan Al Mahrooqi</h4>
                   <p className="team-role">Managing Director</p>
                   <p className="team-desc">
                     18+ years of industry experience in MEP and ELV solutions
@@ -148,7 +148,7 @@ const About = () => {
                 <div className="team-img"></div>
                 <div className="team-info">
                   <h4>Vignesh Potti</h4>
-                  <p className="team-role">Technical Director</p>
+                  <p className="team-role">Business Development & Operations</p>
                   <p className="team-desc">
                     Expert in engineering design and project management
                   </p>

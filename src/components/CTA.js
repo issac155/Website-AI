@@ -16,7 +16,7 @@ const CTA = () => {
               <i className="fas fa-phone-alt"></i> Call +96898092795
             </a>
             <a
-              href="mailto:alyaqdhan@almawaridoman.com"
+              href="mailto:Vignesh.potti@almawaridoman.com"
               className="cta-button cta-secondary"
             >
               <i className="fas fa-envelope"></i> Email Inquiry

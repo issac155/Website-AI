@@ -1150,10 +1150,10 @@ footer {
 }
 
 .hero-highlight {
-  color: var(--primary-green);
+  color: #fd9d0e;
   position: relative;
   display: inline-block;
-  background: linear-gradient(135deg, var(--primary-green) 0%, #3aa66a 100%);
+  /* background: linear-gradient(135deg, var(--primary-green) 0%, #3aa66a 100%); */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -1720,6 +1720,7 @@ footer {
   display: flex;
   align-items: center;
   gap: 10px;
+  justify-content: center;
   padding: 0.5rem 0;
   color: var(--text-dark);
 }
