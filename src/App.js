@@ -1,7 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+
 import Home from "./pages/Home";
 import About from "./pages/About";
 import ServicesPage from "./pages/ServicesPage";
@@ -12,42 +11,116 @@ import CompanyOverview from "./pages/CompanyOverview";
 import EngineeringApproach from "./pages/EngineeringApproach";
 import FacilityManagement from "./pages/FacilityManagement";
 import LightingSolarSolutions from "./pages/LightingSolarSolutions";
+
+import LoginPage from "./admin/pages/Login";
+
 import "./styles/App.css";
-import ScrollToTop from "./components/ScrollToTop";
+import WebLayout from "./layouts/WebLayout";
+import DashboardHome from "./admin/pages/DashboardHome";
+import ContactUs from "./admin/pages/ContactUs";
+import ContactView from "./admin/pages/ContactView";
 
 function App() {
   return (
     <Router>
-      <div className="App">
-        <ScrollToTop />
+      <Routes>
+        {/* 🌐 PUBLIC WEBSITE */}
+        <Route
+          path="/"
+          element={
+            <WebLayout>
+              <Home />
+            </WebLayout>
+          }
+        />
 
-        <Header />
+        <Route
+          path="/about"
+          element={
+            <WebLayout>
+              <About />
+            </WebLayout>
+          }
+        />
 
-        <main>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/services" element={<ServicesPage />} />
-            <Route path="/projects" element={<ProjectsPage />} />
-            <Route path="/partners" element={<PartnersPage />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/company-overview" element={<CompanyOverview />} />
-            <Route
-              path="/engineering-approach"
-              element={<EngineeringApproach />}
-            />
-            <Route
-              path="/facility-management"
-              element={<FacilityManagement />}
-            />
-            <Route
-              path="/lighting-solar-solutions"
-              element={<LightingSolarSolutions />}
-            />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
+        <Route
+          path="/services"
+          element={
+            <WebLayout>
+              <ServicesPage />
+            </WebLayout>
+          }
+        />
+
+        <Route
+          path="/projects"
+          element={
+            <WebLayout>
+              <ProjectsPage />
+            </WebLayout>
+          }
+        />
+
+        <Route
+          path="/partners"
+          element={
+            <WebLayout>
+              <PartnersPage />
+            </WebLayout>
+          }
+        />
+
+        <Route
+          path="/contact"
+          element={
+            <WebLayout>
+              <Contact />
+            </WebLayout>
+          }
+        />
+
+        <Route
+          path="/company-overview"
+          element={
+            <WebLayout>
+              <CompanyOverview />
+            </WebLayout>
+          }
+        />
+
+        <Route
+          path="/engineering-approach"
+          element={
+            <WebLayout>
+              <EngineeringApproach />
+            </WebLayout>
+          }
+        />
+
+        <Route
+          path="/facility-management"
+          element={
+            <WebLayout>
+              <FacilityManagement />
+            </WebLayout>
+          }
+        />
+
+        <Route
+          path="/lighting-solar-solutions"
+          element={
+            <WebLayout>
+              <LightingSolarSolutions />
+            </WebLayout>
+          }
+        />
+
+        {/* 🔐 ADMIN PANEL (NO HEADER / FOOTER) DashboardHome*/}
+        <Route path="/admin" element={<LoginPage />} />
+        <Route path="/dashboard" element={<DashboardHome />} />
+        <Route path="/contacts" element={<ContactUs />} />
+        <Route path="/contacts/:id" element={<ContactView />} />
+      </Routes>
     </Router>
   );
 }

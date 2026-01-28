@@ -147,7 +147,7 @@ const About = () => {
               <div className="team-card">
                 <div className="team-img"></div>
                 <div className="team-info">
-                  <h4>Vignesh Potti</h4>
+                  <h4>Vignesh Potti PMP, LSSBB Certified</h4>
                   <p className="team-role">Business Development & Operations</p>
                   <p className="team-desc">
                     Expert in engineering design and project management
