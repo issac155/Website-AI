@@ -1,172 +1,79 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faBuilding,
+  faBars,
+  faTimes,
+  faHome,
   faEnvelope,
   faUsers,
-  faChartLine,
-  faCogs,
-  faUserShield,
-  faProjectDiagram,
-  faFileAlt,
+  faChartBar,
   faCog,
-  faTachometerAlt,
-  faBell,
+  faSignOutAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import "../../style/DashboardLayout.css";
+import { useNavigate } from "react-router-dom";
+import "../../style/Sidebar.css";
 
-const Sidebar = () => {
-  const location = useLocation();
+const Sidebar = ({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab }) => {
+  const navigate = useNavigate();
 
-  const navigationItems = [
-    {
-      path: "/dashboard",
-      label: "Dashboard",
-      icon: faTachometerAlt,
-    },
-    {
-      path: "/dashboard/contacts",
-      label: "Contact Management",
-      icon: faEnvelope,
-    },
-    {
-      path: "/dashboard/projects",
-      label: "Projects",
-      icon: faProjectDiagram,
-    },
-    {
-      label: "Team",
-      icon: faUsers,
-      submenu: [
-        {
-          path: "/dashboard/team/engineers",
-          label: "Engineers",
-          icon: faUserShield,
-        },
-        { path: "/dashboard/team/managers", label: "Managers", icon: faUsers },
-        {
-          path: "/dashboard/team/contractors",
-          label: "Contractors",
-          icon: faUsers,
-        },
-      ],
-    },
-    {
-      label: "Reports",
-      icon: faChartLine,
-      submenu: [
-        {
-          path: "/dashboard/reports/analytics",
-          label: "Analytics",
-          icon: faChartLine,
-        },
-        {
-          path: "/dashboard/reports/financial",
-          label: "Financial",
-          icon: faFileAlt,
-        },
-        {
-          path: "/dashboard/reports/projects",
-          label: "Project Reports",
-          icon: faProjectDiagram,
-        },
-      ],
-    },
-    {
-      label: "Engineering",
-      icon: faCogs,
-      submenu: [
-        {
-          path: "/dashboard/engineering/mep",
-          label: "MEP Systems",
-          icon: faCog,
-        },
-        {
-          path: "/dashboard/engineering/elv",
-          label: "ELV Systems",
-          icon: faCog,
-        },
-        {
-          path: "/dashboard/engineering/lighting",
-          label: "Lighting Design",
-          icon: faCog,
-        },
-      ],
-    },
-    {
-      label: "Settings",
-      icon: faCogs,
-      submenu: [
-        { path: "/dashboard/settings/general", label: "General", icon: faCog },
-        {
-          path: "/dashboard/settings/notifications",
-          label: "Notifications",
-          icon: faBell,
-        },
-        {
-          path: "/dashboard/settings/security",
-          label: "Security",
-          icon: faUserShield,
-        },
-      ],
-    },
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
+  const menuItems = [
+    { id: "dashboard", label: "Dashboard", icon: faHome },
+    { id: "contacts", label: "Contact Us", icon: faEnvelope },
+    // { id: "users", label: "Users", icon: faUsers },
+    // { id: "analytics", label: "Analytics", icon: faChartBar },
+    // { id: "settings", label: "Settings", icon: faCog },
   ];
 
   return (
-    <aside className="dashboard-sidebar open">
+    <aside className={`sidebar  "open" `}>
       <div className="sidebar-header">
         <div className="sidebar-logo">
-          <div className="logo-icon">
-            <FontAwesomeIcon icon={faBuilding} />
-          </div>
-          <div className="logo-text">
-            <span className="logo-main">ENG</span>
-            <span className="logo-sub">Admin</span>
+          <div className="sidebar-logo-icon">ES</div>
+          <div className="sidebar-logo-text">
+            <h2>Engineering</h2>
+            <p>Solutions Admin</p>
           </div>
         </div>
+        {/* <button
+          className="sidebar-toggle"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+        >
+          <FontAwesomeIcon icon={sidebarOpen ? faTimes : faBars} />
+        </button> */}
       </div>
 
       <nav className="sidebar-nav">
-        <ul className="nav-menu">
-          {navigationItems.map((item, index) => (
-            <li key={index} className="nav-item">
-              {item.path && (
-                <Link
-                  to={item.path}
-                  className={`nav-link ${location.pathname === item.path ? "active" : ""}`}
-                >
-                  <FontAwesomeIcon icon={item.icon} className="nav-icon" />
-                  <span className="nav-label">{item.label}</span>
-                </Link>
-              )}
-
-              {item.submenu && (
-                <ul className="submenu expanded">
-                  <li className="submenu-title">
-                    <FontAwesomeIcon icon={item.icon} />
-                    <span>{item.label}</span>
-                  </li>
-                  {item.submenu.map((subItem) => (
-                    <li key={subItem.path}>
-                      <Link
-                        to={subItem.path}
-                        className={`subnav-link ${location.pathname === subItem.path ? "active" : ""}`}
-                      >
-                        <FontAwesomeIcon
-                          icon={subItem.icon}
-                          className="subnav-icon"
-                        />
-                        <span>{subItem.label}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </li>
-          ))}
-        </ul>
+        {menuItems.map((item) => (
+          <button
+            key={item.id}
+            className={`sidebar-nav-item ${activeTab === item.id ? "active" : ""}`}
+            onClick={() => {
+              setActiveTab(item.id);
+              if (item.id === "contacts") {
+                navigate("/contacts");
+              } else {
+                navigate("/dashboard");
+              }
+            }}
+          >
+            <FontAwesomeIcon icon={item.icon} className="sidebar-nav-icon" />
+            <span className="sidebar-nav-label">{item.label}</span>
+          </button>
+        ))}
       </nav>
+
+      <div className="sidebar-footer">
+        <button className="sidebar-logout-btn" onClick={handleLogout}>
+          <FontAwesomeIcon icon={faSignOutAlt} />
+          <span>Logout</span>
+        </button>
+      </div>
     </aside>
   );
 };

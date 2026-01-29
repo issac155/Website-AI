@@ -32,19 +32,6 @@ const DashboardLayout = () => {
 
   return (
     <div className="dashboard-container">
-      <Header
-      // onToggleSidebar={toggleSidebar}
-      // onToggleMobileSidebar={toggleMobileSidebar}
-      // mobileSidebarOpen={mobileSidebarOpen}
-      />
-      {/* 
-      <Sidebar
-      // sidebarOpen={sidebarOpen}
-      // mobileSidebarOpen={mobileSidebarOpen}
-      // expandedMenus={expandedMenus}
-      // onToggleMenu={toggleMenu}
-      /> */}
-
       <main className="dashboard-main">
         <Outlet />
       </main>

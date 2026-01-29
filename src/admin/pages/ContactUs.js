@@ -14,8 +14,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import "../style/ContactUs.css";
-import Header from "../../components/Header";
 import Sidebar from "../components/layout/Sidebar";
+import Header from "../components/layout/Header";
+import ContactViewPopup from "./ContactView";
 
 const ContactUs = () => {
   const [contacts, setContacts] = useState([]);
@@ -25,8 +26,28 @@ const ContactUs = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [sortBy, setSortBy] = useState("date");
   const navigate = useNavigate();
-
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [activeTab, setActiveTab] = useState("dashboard");
   // Mock data - replace with API call
+  const [selectedContactId, setSelectedContactId] = useState(null);
+
+  const handleContactClick = (contactId) => {
+    setSelectedContactId(contactId);
+  };
+
+  const handleClosePopup = () => {
+    setSelectedContactId(null);
+  };
+
+  const handleUpdateContact = (updatedContact) => {
+    // Update the contact in your list
+    setContacts(
+      contacts.map((contact) =>
+        contact.id === updatedContact.id ? updatedContact : contact,
+      ),
+    );
+  };
+
   useEffect(() => {
     const mockContacts = [
       {
@@ -193,163 +214,153 @@ const ContactUs = () => {
   }
 
   return (
-    <div className="contact-management">
-      <Header
-      // onToggleSidebar={toggleSidebar}
-      // onToggleMobileSidebar={toggleMobileSidebar}
-      // mobileSidebarOpen={mobileSidebarOpen}
-      />
-
+    <div className="dashboard-layout">
+      {" "}
+      {/* Updated class name */}
       <Sidebar
-      // sidebarOpen={sidebarOpen}
-      // mobileSidebarOpen={mobileSidebarOpen}
-      // expandedMenus={expandedMenus}
-      // onToggleMenu={toggleMenu}
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
       />
-      <div className="page-header">
-        <div className="header-left">
-          <h2>Contact Management</h2>
-          <p>Manage all contact requests and inquiries</p>
-        </div>
-        <div className="header-right">
-          <button className="export-btn">Export CSV</button>
-          <button className="add-contact-btn">+ Add Contact</button>
-        </div>
-      </div>
+      <main className="dashboard-main-content">
+        <Header activeTab={activeTab} />
 
-      <div className="controls-panel">
-        <div className="search-container">
-          <FontAwesomeIcon icon={faSearch} className="search-icon" />
-          <input
-            type="text"
-            placeholder="Search contacts by name, email, or company..."
-            value={searchTerm}
-            onChange={handleSearch}
-            className="search-input"
-          />
-        </div>
-
-        <div className="filters-container">
-          <div className="filter-group">
-            <FontAwesomeIcon icon={faFilter} />
-            <select
-              value={statusFilter}
-              onChange={(e) => handleStatusFilter(e.target.value)}
-              className="filter-select"
-            >
-              <option value="all">All Status</option>
-              <option value="new">New</option>
-              <option value="pending">Pending</option>
-              <option value="responded">Responded</option>
-            </select>
+        <div className="contact-management">
+          <div className="page-header">
+            <div className="header-left">
+              <h2>Contact Management</h2>
+              <p>Manage all contact requests and inquiries</p>
+            </div>
+            {/* <div className="header-right">
+              <button className="export-btn">Export CSV</button>
+              <button className="add-contact-btn">+ Add Contact</button>
+            </div> */}
           </div>
 
-          <div className="filter-group">
-            <FontAwesomeIcon icon={faSort} />
-            <select
-              value={sortBy}
-              onChange={(e) => handleSort(e.target.value)}
-              className="filter-select"
-            >
-              <option value="date">Sort by Date</option>
-              <option value="name">Sort by Name</option>
-            </select>
-          </div>
-        </div>
-      </div>
+          <div className="controls-panel">
+            <div className="search-container">
+              <FontAwesomeIcon icon={faSearch} className="search-icon" />
+              <input
+                type="text"
+                placeholder="Search contacts by name, email, or company..."
+                value={searchTerm}
+                onChange={handleSearch}
+                className="search-input"
+              />
+            </div>
 
-      <div className="contacts-table-container">
-        <table className="contacts-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Company</th>
-              <th>Contact Info</th>
-              <th>Subject</th>
-              <th>Date</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredContacts.length > 0 ? (
-              filteredContacts.map((contact) => (
-                <tr key={contact.id}>
-                  <td>
-                    <div className="contact-name">
-                      <strong>{contact.name}</strong>
-                    </div>
-                  </td>
-                  <td>{contact.company}</td>
-                  <td>
-                    <div className="contact-info">
-                      <div className="contact-email">
-                        <FontAwesomeIcon icon={faEnvelope} />
-                        {contact.email}
-                      </div>
-                      <div className="contact-phone">
-                        <FontAwesomeIcon icon={faPhone} />
-                        {contact.phone}
-                      </div>
-                    </div>
-                  </td>
-                  <td>{contact.subject}</td>
-                  <td>
-                    <div className="contact-date">
-                      <FontAwesomeIcon icon={faCalendar} />
-                      {contact.date}
-                    </div>
-                  </td>
-                  <td>{getStatusBadge(contact.status)}</td>
-                  <td>
-                    <div className="action-buttons">
-                      <button
-                        className="action-btn view-btn"
-                        onClick={() =>
-                          navigate(`/dashboard/contacts/${contact.id}`)
-                        }
-                      >
-                        <FontAwesomeIcon icon={faEye} />
-                        <span>View</span>
-                      </button>
-                      <button className="action-btn reply-btn">
-                        <FontAwesomeIcon icon={faReply} />
-                        <span>Reply</span>
-                      </button>
-                      <button
-                        className="action-btn delete-btn"
-                        onClick={() => deleteContact(contact.id)}
-                      >
-                        <FontAwesomeIcon icon={faTrash} />
-                        <span>Delete</span>
-                      </button>
-                    </div>
-                  </td>
+            <div className="filters-container">
+              <div className="filter-group">
+                <FontAwesomeIcon icon={faFilter} />
+                <select
+                  value={statusFilter}
+                  onChange={(e) => handleStatusFilter(e.target.value)}
+                  className="filter-select"
+                >
+                  <option value="all">All Status</option>
+                  <option value="new">New</option>
+                  <option value="pending">Pending</option>
+                  <option value="responded">Responded</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div className="contacts-table-container">
+            <table className="contacts-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Contact Info</th>
+                  <th>Subject</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Actions</th>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="7" className="no-data">
-                  No contacts found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+              </thead>
+              <tbody>
+                {filteredContacts.length > 0 ? (
+                  filteredContacts.map((contact) => (
+                    <tr key={contact.id}>
+                      <td>
+                        <div className="contact-name">
+                          <strong>{contact.name}</strong>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="contact-info">
+                          <div className="contact-email">
+                            <FontAwesomeIcon icon={faEnvelope} />
+                            {contact.email}
+                          </div>
+                          <div className="contact-phone">
+                            <FontAwesomeIcon icon={faPhone} />
+                            {contact.phone}
+                          </div>
+                        </div>
+                      </td>
+                      <td>{contact.subject}</td>
+                      <td>
+                        <div className="contact-date">
+                          <FontAwesomeIcon icon={faCalendar} />
+                          {contact.date}
+                        </div>
+                      </td>
+                      <td>{getStatusBadge(contact.status)}</td>
+                      <td>
+                        <div className="action-buttons">
+                          <button
+                            className="action-btn view-btn"
+                            onClick={() => handleContactClick(contact.id)}
+                          >
+                            <FontAwesomeIcon icon={faEye} />
+                            <span>View</span>
+                          </button>
 
-      <div className="table-footer">
-        <div className="pagination-info">
-          Showing {filteredContacts.length} of {contacts.length} contacts
+                          <button
+                            className="action-btn delete-btn"
+                            onClick={() => deleteContact(contact.id)}
+                          >
+                            <FontAwesomeIcon icon={faTrash} />
+                            <span>Delete</span>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="7" className="no-data">
+                      No contacts found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="table-footer">
+            <div className="pagination-info">
+              Showing {filteredContacts.length} of {contacts.length} contacts
+            </div>
+            <div className="pagination-controls">
+              <button className="pagination-btn" disabled>
+                Previous
+              </button>
+              <span className="page-number">1</span>
+              <button className="pagination-btn">Next</button>
+            </div>
+          </div>
         </div>
-        <div className="pagination-controls">
-          <button className="pagination-btn" disabled>
-            Previous
-          </button>
-          <span className="page-number">1</span>
-          <button className="pagination-btn">Next</button>
-        </div>
-      </div>
+      </main>
+      {selectedContactId && (
+        <ContactViewPopup
+          contactId={selectedContactId}
+          onClose={handleClosePopup}
+          onUpdateContact={handleUpdateContact}
+        />
+      )}
     </div>
   );
 };

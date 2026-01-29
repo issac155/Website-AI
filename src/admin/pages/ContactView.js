@@ -1,4 +1,4 @@
-// ContactView.js
+// ContactViewPopup.js
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -13,13 +13,11 @@ import {
   faPrint,
   faDownload,
   faPaperclip,
+  faTimes,
 } from "@fortawesome/free-solid-svg-icons";
-import { useParams, useNavigate } from "react-router-dom";
 import "../style/ContactView.css";
 
-const ContactView = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
+const ContactViewPopup = ({ contactId, onClose, onUpdateContact }) => {
   const [contact, setContact] = useState(null);
   const [loading, setLoading] = useState(true);
   const [replyText, setReplyText] = useState("");
@@ -28,7 +26,7 @@ const ContactView = () => {
   useEffect(() => {
     // Mock API call
     const mockContact = {
-      id: 1,
+      id: contactId,
       name: "Ahmed Al-Maskari",
       email: "ahmed@example.com",
       phone: "+968 1234 5678",
@@ -47,12 +45,16 @@ const ContactView = () => {
 
     setContact(mockContact);
     setLoading(false);
-  }, [id]);
+  }, [contactId]);
 
   const handleReply = () => {
     if (replyText.trim()) {
       alert("Reply sent successfully!");
       setReplyText("");
+      // In real app, update contact status
+      if (onUpdateContact) {
+        onUpdateContact({ ...contact, status: "responded" });
+      }
     }
   };
 
@@ -62,115 +64,131 @@ const ContactView = () => {
     }
   };
 
+  const handleDelete = () => {
+    if (window.confirm("Are you sure you want to delete this contact?")) {
+      alert("Contact deleted!");
+      onClose();
+    }
+  };
+
+  const handleStatusChange = (newStatus) => {
+    const updatedContact = { ...contact, status: newStatus };
+    setContact(updatedContact);
+    if (onUpdateContact) {
+      onUpdateContact(updatedContact);
+    }
+  };
+
   if (loading) {
-    return <div className="loading">Loading contact details...</div>;
+    return (
+      <div className="popup-overlay">
+        <div className="popup-content loading">
+          <div className="loading-spinner"></div>
+          <p>Loading contact details...</p>
+        </div>
+      </div>
+    );
   }
 
   if (!contact) {
-    return <div className="not-found">Contact not found</div>;
-  }
-
-  return (
-    <div className="contact-view">
-      <div className="view-header">
-        <button
-          className="back-btn"
-          onClick={() => navigate("/dashboard/contacts")}
-        >
-          <FontAwesomeIcon icon={faArrowLeft} />
-          Back to Contacts
-        </button>
-
-        <div className="header-actions">
-          <button className="action-btn print-btn">
-            <FontAwesomeIcon icon={faPrint} />
-            Print
-          </button>
-          <button className="action-btn export-btn">
-            <FontAwesomeIcon icon={faDownload} />
-            Export
-          </button>
-          <button className="action-btn delete-btn">
-            <FontAwesomeIcon icon={faTrash} />
-            Delete
+    return (
+      <div className="popup-overlay">
+        <div className="popup-content not-found">
+          <h3>Contact not found</h3>
+          <button onClick={onClose} className="close-btn">
+            Close
           </button>
         </div>
       </div>
+    );
+  }
 
-      <div className="contact-details-card">
-        <div className="card-header">
-          <div className="contact-title">
+  return (
+    <div className="popup-overlay" onClick={onClose}>
+      <div className="popup-content" onClick={(e) => e.stopPropagation()}>
+        <div className="popup-header">
+          <div className="popup-title">
             <h2>{contact.subject}</h2>
             <div className={`status-badge ${contact.status}`}>
               {contact.status.charAt(0).toUpperCase() + contact.status.slice(1)}
             </div>
           </div>
-          <button className="edit-btn">
-            <FontAwesomeIcon icon={faEdit} />
-            Edit Contact
+          <button className="close-popup-btn" onClick={onClose}>
+            <FontAwesomeIcon icon={faTimes} />
           </button>
         </div>
 
-        <div className="contact-info-grid">
-          <div className="info-section">
-            <div className="info-item">
-              <FontAwesomeIcon icon={faBuilding} className="info-icon" />
-              <div className="info-content">
-                <label>Company</label>
-                <p>{contact.company}</p>
+        <div className="popup-body">
+          {/* Status Toggle */}
+          <div className="status-toggle">
+            <button
+              className={`status-option ${contact.status === "new" ? "active" : ""}`}
+              onClick={() => handleStatusChange("new")}
+            >
+              New
+            </button>
+            <button
+              className={`status-option ${contact.status === "pending" ? "active" : ""}`}
+              onClick={() => handleStatusChange("pending")}
+            >
+              Pending
+            </button>
+            <button
+              className={`status-option ${contact.status === "responded" ? "active" : ""}`}
+              onClick={() => handleStatusChange("responded")}
+            >
+              Responded
+            </button>
+          </div>
+
+          {/* Contact Information */}
+          <div className="contact-info-section">
+            <div className="contact-header">
+              <h3>{contact.name}</h3>
+              <span className="company-badge">{contact.company}</span>
+            </div>
+
+            <div className="contact-details-grid">
+              <div className="detail-item">
+                <FontAwesomeIcon icon={faEnvelope} />
+                <span>{contact.email}</span>
+              </div>
+              <div className="detail-item">
+                <FontAwesomeIcon icon={faPhone} />
+                <span>{contact.phone}</span>
+              </div>
+              <div className="detail-item">
+                <FontAwesomeIcon icon={faBuilding} />
+                <span>{contact.address}</span>
+              </div>
+              <div className="detail-item">
+                <FontAwesomeIcon icon={faCalendar} />
+                <span>Received: {contact.date}</span>
               </div>
             </div>
 
-            <div className="info-item">
-              <FontAwesomeIcon icon={faEnvelope} className="info-icon" />
-              <div className="info-content">
-                <label>Email</label>
-                <p>{contact.email}</p>
+            <div className="project-details">
+              <div className="project-item">
+                <strong>Project Type:</strong> {contact.projectType}
               </div>
-            </div>
-
-            <div className="info-item">
-              <FontAwesomeIcon icon={faPhone} className="info-icon" />
-              <div className="info-content">
-                <label>Phone</label>
-                <p>{contact.phone}</p>
+              <div className="project-item">
+                <strong>Budget:</strong> {contact.budget}
+              </div>
+              <div className="project-item">
+                <strong>Timeline:</strong> {contact.timeline}
               </div>
             </div>
           </div>
 
-          <div className="info-section">
-            <div className="info-item">
-              <FontAwesomeIcon icon={faCalendar} className="info-icon" />
-              <div className="info-content">
-                <label>Date Received</label>
-                <p>{contact.date}</p>
-              </div>
-            </div>
-
-            <div className="info-item">
-              <div className="info-content">
-                <label>Project Type</label>
-                <p>{contact.projectType}</p>
-              </div>
-            </div>
-
-            <div className="info-item">
-              <div className="info-content">
-                <label>Estimated Budget</label>
-                <p>{contact.budget}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="message-section">
-          <h3>Message</h3>
-          <div className="message-content">
-            <p>{contact.message}</p>
+          {/* Message */}
+          <div className="message-section">
+            <h4>Message</h4>
+            <div className="message-content">{contact.message}</div>
           </div>
 
+          {/* Attachments */}
           {contact.attachments && contact.attachments.length > 0 && (
-            <div className="attachments">
+            <div className="attachments-section">
               <h4>
                 <FontAwesomeIcon icon={faPaperclip} />
                 Attachments ({contact.attachments.length})
@@ -178,69 +196,91 @@ const ContactView = () => {
               <div className="attachment-list">
                 {contact.attachments.map((file, index) => (
                   <div key={index} className="attachment-item">
-                    <span>{file}</span>
-                    <button className="download-attachment">Download</button>
+                    <span className="file-name">{file}</span>
+                    <button className="download-btn">Download</button>
                   </div>
                 ))}
               </div>
             </div>
           )}
-        </div>
 
-        <div className="actions-section">
+          {/* Reply Section */}
           <div className="reply-section">
-            <h3>Send Reply</h3>
+            <h4>Send Reply</h4>
             <textarea
               value={replyText}
               onChange={(e) => setReplyText(e.target.value)}
               placeholder="Type your reply here..."
-              rows="4"
+              rows="3"
             />
-            <div className="reply-actions">
-              <button className="send-reply-btn" onClick={handleReply}>
+            <div className="action-buttons">
+              <button className="btn-primary" onClick={handleReply}>
                 <FontAwesomeIcon icon={faReply} />
                 Send Reply
               </button>
-              <button className="save-template-btn">Save as Template</button>
+              <button className="btn-secondary">Save as Template</button>
             </div>
           </div>
 
+          {/* Notes */}
           <div className="notes-section">
-            <h3>Internal Notes</h3>
+            <h4>Internal Notes</h4>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Add internal notes here..."
-              rows="4"
+              rows="3"
             />
-            <div className="notes-actions">
-              <button className="save-notes-btn" onClick={handleSaveNotes}>
+            <div className="action-buttons">
+              <button className="btn-success" onClick={handleSaveNotes}>
                 Save Notes
               </button>
-              <button className="clear-notes-btn" onClick={() => setNotes("")}>
+              <button className="btn-outline" onClick={() => setNotes("")}>
                 Clear
               </button>
             </div>
           </div>
+
+          {/* Activity */}
+          <div className="activity-section">
+            <h4>Activity History</h4>
+            <div className="activity-timeline">
+              <div className="activity-item">
+                <div className="activity-dot"></div>
+                <div className="activity-content">
+                  <p>Contact created</p>
+                  <span>{contact.date} • 10:30 AM</span>
+                </div>
+              </div>
+              <div className="activity-item">
+                <div className="activity-dot"></div>
+                <div className="activity-content">
+                  <p>Status changed to "{contact.status}"</p>
+                  <span>{contact.date} • 10:32 AM</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="activity-section">
-          <h3>Activity History</h3>
-          <div className="activity-list">
-            <div className="activity-item">
-              <div className="activity-dot"></div>
-              <div className="activity-content">
-                <p>Contact created - {contact.date}</p>
-                <span className="activity-time">10:30 AM</span>
-              </div>
-            </div>
-            <div className="activity-item">
-              <div className="activity-dot"></div>
-              <div className="activity-content">
-                <p>Status changed to "New"</p>
-                <span className="activity-time">10:32 AM</span>
-              </div>
-            </div>
+        <div className="popup-footer">
+          <div className="footer-actions">
+            <button className="action-btn" onClick={handleDelete}>
+              <FontAwesomeIcon icon={faTrash} />
+              Delete Contact
+            </button>
+            <button className="action-btn">
+              <FontAwesomeIcon icon={faPrint} />
+              Print
+            </button>
+            <button className="action-btn">
+              <FontAwesomeIcon icon={faDownload} />
+              Export
+            </button>
+            <button className="action-btn primary">
+              <FontAwesomeIcon icon={faEdit} />
+              Edit Contact
+            </button>
           </div>
         </div>
       </div>
@@ -248,4 +288,4 @@ const ContactView = () => {
   );
 };
 
-export default ContactView;
+export default ContactViewPopup;
