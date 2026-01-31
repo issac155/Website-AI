@@ -1,5 +1,5 @@
 /* ContactViewPopup.css */
-.popup-overlay {
+.contactview-popup-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -24,7 +24,7 @@
   }
 }
 
-.popup-content {
+.contactview-popup-content {
   background: white;
   border-radius: 16px;
   width: 100%;
@@ -48,31 +48,31 @@
   }
 }
 
-.popup-header {
+.contactview-popup-header {
   padding: 20px 30px;
   border-bottom: 1px solid #f0f0f0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: linear-gradient(135deg, #ffd700 0%, #daa520 100%);
+  color: #333;
 }
 
-.popup-title {
+.contactview-popup-title {
   display: flex;
   align-items: center;
   gap: 15px;
   flex-wrap: wrap;
 }
 
-.popup-title h2 {
+.contactview-popup-title h2 {
   margin: 0;
   font-size: 20px;
   font-weight: 600;
-  color: white;
+  color: #333;
 }
 
-.status-badge {
+.contactview-status-badge {
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 11px;
@@ -81,25 +81,25 @@
   letter-spacing: 0.5px;
 }
 
-.status-badge.new {
+.contactview-status-badge.new {
+  background: rgba(255, 255, 255, 0.3);
+  color: #333;
+}
+
+.contactview-status-badge.pending {
+  background: rgba(255, 193, 7, 0.3);
+  color: #b8860b;
+}
+
+.contactview-status-badge.responded {
+  background: rgba(40, 167, 69, 0.3);
+  color: #2e8b57;
+}
+
+.contactview-close-popup-btn {
   background: rgba(255, 255, 255, 0.2);
-  color: white;
-}
-
-.status-badge.pending {
-  background: rgba(255, 193, 7, 0.2);
-  color: #ffc107;
-}
-
-.status-badge.responded {
-  background: rgba(40, 167, 69, 0.2);
-  color: #28a745;
-}
-
-.close-popup-btn {
-  background: rgba(255, 255, 255, 0.1);
   border: none;
-  color: white;
+  color: #333;
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -110,19 +110,19 @@
   transition: all 0.3s ease;
 }
 
-.close-popup-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+.contactview-close-popup-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
   transform: rotate(90deg);
 }
 
-.popup-body {
+.contactview-popup-body {
   flex: 1;
   overflow-y: auto;
   padding: 30px;
   background: #f8f9fa;
 }
 
-.status-toggle {
+.contactview-status-toggle {
   display: flex;
   gap: 10px;
   margin-bottom: 25px;
@@ -132,7 +132,7 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
-.status-option {
+.contactview-status-option {
   flex: 1;
   padding: 10px 15px;
   border: 2px solid transparent;
@@ -144,17 +144,17 @@
   transition: all 0.3s ease;
 }
 
-.status-option:hover {
-  background: #e9ecef;
+.contactview-status-option:hover {
+  background: #f5f5dc;
 }
 
-.status-option.active {
-  background: #667eea;
-  color: white;
-  border-color: #667eea;
+.contactview-status-option.active {
+  background: linear-gradient(135deg, #ffd700 0%, #daa520 100%);
+  color: #333;
+  border-color: #daa520;
 }
 
-.contact-info-section {
+.contactview-info-section {
   background: white;
   padding: 20px;
   border-radius: 12px;
@@ -162,7 +162,7 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
-.contact-header {
+.contactview-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -171,29 +171,29 @@
   border-bottom: 1px solid #f0f0f0;
 }
 
-.contact-header h3 {
+.contactview-header h3 {
   margin: 0;
   font-size: 18px;
   color: #1a1a1a;
 }
 
-.company-badge {
-  background: #e3f2fd;
-  color: #1976d2;
+.contactview-company-badge {
+  background: #fff8dc;
+  color: #b8860b;
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 500;
 }
 
-.contact-details-grid {
+.contactview-details-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 15px;
   margin-bottom: 20px;
 }
 
-.detail-item {
+.contactview-detail-item {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -201,12 +201,12 @@
   color: #666;
 }
 
-.detail-item svg {
-  color: #667eea;
+.contactview-detail-item svg {
+  color: #daa520;
   width: 16px;
 }
 
-.project-details {
+.contactview-project-details {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 10px;
@@ -214,21 +214,21 @@
   border-top: 1px solid #f0f0f0;
 }
 
-.project-item {
+.contactview-project-item {
   font-size: 14px;
   color: #333;
 }
 
-.project-item strong {
+.contactview-project-item strong {
   color: #666;
   margin-right: 5px;
 }
 
-.message-section,
-.attachments-section,
-.reply-section,
-.notes-section,
-.activity-section {
+.contactview-message-section,
+.contactview-attachments-section,
+.contactview-reply-section,
+.contactview-notes-section,
+.contactview-activity-section {
   background: white;
   padding: 20px;
   border-radius: 12px;
@@ -236,31 +236,31 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
-.message-section h4,
-.attachments-section h4,
-.reply-section h4,
-.notes-section h4,
-.activity-section h4 {
+.contactview-message-section h4,
+.contactview-attachments-section h4,
+.contactview-reply-section h4,
+.contactview-notes-section h4,
+.contactview-activity-section h4 {
   margin: 0 0 15px 0;
   font-size: 16px;
   color: #1a1a1a;
   font-weight: 600;
 }
 
-.message-content {
+.contactview-message-content {
   line-height: 1.6;
   color: #333;
   font-size: 14px;
   white-space: pre-wrap;
 }
 
-.attachments-section h4 {
+.contactview-attachments-section h4 {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.attachment-list {
+.contactview-attachment-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -276,15 +276,15 @@
   border: 1px solid #e0e0e0;
 }
 
-.file-name {
+.contactview-file-name {
   font-size: 14px;
   color: #333;
 }
 
-.download-btn {
+.contactview-download-btn {
   padding: 6px 12px;
-  background: #667eea;
-  color: white;
+  background: linear-gradient(135deg, #ffd700 0%, #daa520 100%);
+  color: #333;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -293,8 +293,8 @@
   transition: all 0.3s ease;
 }
 
-.download-btn:hover {
-  background: #5a67d8;
+.contactview-download-btn:hover {
+  background: linear-gradient(135deg, #daa520 0%, #b8860b 100%);
 }
 
 textarea {
@@ -311,19 +311,19 @@ textarea {
 
 textarea:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #daa520;
+  box-shadow: 0 0 0 3px rgba(218, 165, 32, 0.1);
 }
 
-.action-buttons {
+.contactview-action-buttons {
   display: flex;
   gap: 10px;
 }
 
-.btn-primary,
-.btn-secondary,
-.btn-success,
-.btn-outline {
+.contactview-btn-primary,
+.contactview-btn-secondary,
+.contactview-btn-success,
+.contactview-btn-outline {
   padding: 10px 20px;
   border: none;
   border-radius: 6px;
@@ -336,91 +336,91 @@ textarea:focus {
   gap: 8px;
 }
 
-.btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+.contactview-btn-primary {
+  background: linear-gradient(135deg, #ffd700 0%, #daa520 100%);
+  color: #333;
 }
 
-.btn-primary:hover {
+.contactview-btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 5px 15px rgba(218, 165, 32, 0.4);
 }
 
-.btn-secondary {
+.contactview-btn-secondary {
   background: #f8f9fa;
   color: #666;
   border: 1px solid #ddd;
 }
 
-.btn-secondary:hover {
-  border-color: #667eea;
-  color: #667eea;
+.contactview-btn-secondary:hover {
+  border-color: #daa520;
+  color: #b8860b;
 }
 
-.btn-success {
+.contactview-btn-success {
   background: #28a745;
   color: white;
 }
 
-.btn-success:hover {
+.contactview-btn-success:hover {
   background: #218838;
 }
 
-.btn-outline {
+.contactview-btn-outline {
   background: white;
   color: #666;
   border: 1px solid #ddd;
 }
 
-.btn-outline:hover {
+.contactview-btn-outline:hover {
   border-color: #dc3545;
   color: #dc3545;
 }
 
-.activity-timeline {
+.contactview-activity-timeline {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
-.activity-item {
+.contactview-activity-item {
   display: flex;
   gap: 12px;
 }
 
-.activity-dot {
+.contactview-activity-dot {
   width: 8px;
   height: 8px;
-  background: #667eea;
+  background: #daa520;
   border-radius: 50%;
   margin-top: 6px;
   flex-shrink: 0;
 }
 
-.activity-content p {
+.contactview-activity-content p {
   margin: 0 0 4px 0;
   font-size: 14px;
   color: #333;
 }
 
-.activity-content span {
+.contactview-activity-content span {
   font-size: 12px;
   color: #999;
 }
 
-.popup-footer {
+.contactview-popup-footer {
   padding: 20px 30px;
   border-top: 1px solid #f0f0f0;
   background: white;
 }
 
-.footer-actions {
+.contactview-footer-actions {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
 }
 
-.action-btn {
+.contactview-action-btn {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -435,24 +435,24 @@ textarea:focus {
   transition: all 0.3s ease;
 }
 
-.action-btn:hover {
+.contactview-action-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.action-btn.primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+.contactview-action-btn.primary {
+  background: linear-gradient(135deg, #ffd700 0%, #daa520 100%);
+  color: #333;
   border: none;
 }
 
-.action-btn:first-child:hover {
+.contactview-action-btn:first-child:hover {
   border-color: #dc3545;
   color: #dc3545;
 }
 
-.loading,
-.not-found {
+.contactview-loading,
+.contactview-not-found {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -461,11 +461,11 @@ textarea:focus {
   text-align: center;
 }
 
-.loading-spinner {
+.contactview-loading-spinner {
   width: 40px;
   height: 40px;
   border: 3px solid #f3f3f3;
-  border-top: 3px solid #667eea;
+  border-top: 3px solid #ffd700;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 15px;
@@ -480,69 +480,69 @@ textarea:focus {
   }
 }
 
-.not-found h3 {
+.contactview-not-found h3 {
   color: #dc3545;
   margin-bottom: 15px;
 }
 
 /* Scrollbar Styling */
-.popup-body::-webkit-scrollbar {
+.contactview-popup-body::-webkit-scrollbar {
   width: 8px;
 }
 
-.popup-body::-webkit-scrollbar-track {
+.contactview-popup-body::-webkit-scrollbar-track {
   background: #f1f1f1;
 }
 
-.popup-body::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+.contactview-popup-body::-webkit-scrollbar-thumb {
+  background: #daa520;
   border-radius: 4px;
 }
 
-.popup-body::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+.contactview-popup-body::-webkit-scrollbar-thumb:hover {
+  background: #b8860b;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .popup-content {
+  .contactview-popup-content {
     max-width: 95%;
     max-height: 95vh;
   }
 
-  .popup-header {
+  .contactview-popup-header {
     padding: 15px 20px;
   }
 
-  .popup-body {
+  .contactview-popup-body {
     padding: 20px;
   }
 
-  .popup-footer {
+  .contactview-popup-footer {
     padding: 15px 20px;
   }
 
-  .footer-actions {
+  .contactview-footer-actions {
     justify-content: center;
   }
 
-  .contact-details-grid,
-  .project-details {
+  .contactview-details-grid,
+  .contactview-project-details {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 480px) {
-  .status-toggle {
+  .contactview-status-toggle {
     flex-direction: column;
   }
 
-  .action-buttons,
-  .footer-actions {
+  .contactview-action-buttons,
+  .contactview-footer-actions {
     flex-direction: column;
   }
 
-  .contact-header {
+  .contactview-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;

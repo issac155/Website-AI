@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../styles/PageStyles.css";
 import {
   FaMapMarkerAlt,
@@ -7,13 +7,17 @@ import {
   FaClock,
   FaPaperPlane,
 } from "react-icons/fa";
+import { saveContact } from "../services/contactservice";
 
 const Contact = () => {
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
-    company: "",
     service: "",
     message: "",
   });
@@ -23,13 +27,89 @@ const Contact = () => {
       ...formData,
       [e.target.name]: e.target.value,
     });
+    // Clear any previous errors when user starts typing
+    if (error) setError("");
   };
+  useEffect(() => {
+    let timer;
+    if (success) {
+      timer = setTimeout(() => {
+        setSuccess(false);
+      }, 5000); // Hide success message after 5 seconds
+    }
 
-  const handleSubmit = (e) => {
+    // Cleanup function
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [success]); // Re-run when success state changes
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission here
-    console.log("Form submitted:", formData);
-    alert("Thank you for your inquiry. We will contact you soon!");
+
+    // Basic validation
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.phone ||
+      !formData.message
+    ) {
+      setError("Please fill in all required fields (*)");
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    // Phone validation (basic - adjust as needed)
+    const phoneRegex = /^[+]?[\d\s\-()]+$/;
+    if (!phoneRegex.test(formData.phone)) {
+      setError("Please enter a valid phone number");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      // Call the API function
+      const response = await saveContact(formData);
+
+      // Handle successful submission
+      setSuccess(true);
+      console.log("Contact saved successfully:", response);
+
+      // Reset form
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        service: "",
+        message: "",
+      });
+
+      // Show success message
+    } catch (err) {
+      // Handle API errors
+      console.error("Error saving contact:", err);
+
+      // Use error message from API or default message
+      if (err.message) {
+        setError(err.message);
+      } else if (typeof err === "string") {
+        setError(err);
+      } else if (err.error) {
+        setError(err.error);
+      } else {
+        setError("Failed to submit form. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -100,7 +180,38 @@ const Contact = () => {
                   24 hours
                 </p>
               </div>
+              {error && (
+                <div
+                  className="error-message"
+                  style={{
+                    backgroundColor: "#f8d7da",
+                    color: "#721c24",
+                    padding: "10px",
+                    borderRadius: "4px",
+                    marginBottom: "20px",
+                    border: "1px solid #f5c6cb",
+                  }}
+                >
+                  {error}
+                </div>
+              )}
 
+              {/* Display success message */}
+              {success && (
+                <div
+                  className="success-message"
+                  style={{
+                    backgroundColor: "#d4edda",
+                    color: "#155724",
+                    padding: "10px",
+                    borderRadius: "4px",
+                    marginBottom: "20px",
+                    border: "1px solid #c3e6cb",
+                  }}
+                >
+                  Thank you! Your message has been sent successfully.
+                </div>
+              )}
               <form className="contact-form" onSubmit={handleSubmit}>
                 <div className="form-row">
                   <div className="form-group">
@@ -111,6 +222,7 @@ const Contact = () => {
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
+                      disabled={loading}
                       required
                     />
                   </div>
@@ -123,6 +235,7 @@ const Contact = () => {
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
+                      disabled={loading}
                       required
                     />
                   </div>
@@ -137,38 +250,29 @@ const Contact = () => {
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
+                      disabled={loading}
                       required
                     />
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="company">Company Name</label>
-                    <input
-                      type="text"
-                      id="company"
-                      name="company"
-                      value={formData.company}
+                    <label htmlFor="service">Service Interested In</label>
+                    <select
+                      id="service"
+                      name="service"
+                      value={formData.service}
                       onChange={handleChange}
-                    />
+                      disabled={loading}
+                    >
+                      <option value="">Select a service</option>
+                      <option value="mep">MEP Engineering</option>
+                      <option value="facility">Facility Management</option>
+                      <option value="elv">ELV System Integration</option>
+                      <option value="lighting">Lighting Solutions</option>
+                      <option value="solar">Solar Solutions</option>
+                      <option value="project">Project Management</option>
+                    </select>
                   </div>
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="service">Service Interested In</label>
-                  <select
-                    id="service"
-                    name="service"
-                    value={formData.service}
-                    onChange={handleChange}
-                  >
-                    <option value="">Select a service</option>
-                    <option value="mep">MEP Engineering</option>
-                    <option value="facility">Facility Management</option>
-                    <option value="elv">ELV System Integration</option>
-                    <option value="lighting">Lighting Solutions</option>
-                    <option value="solar">Solar Solutions</option>
-                    <option value="project">Project Management</option>
-                  </select>
                 </div>
 
                 <div className="form-group">
@@ -180,14 +284,25 @@ const Contact = () => {
                     value={formData.message}
                     onChange={handleChange}
                     required
+                    disabled={loading}
                   ></textarea>
                 </div>
 
                 <button
                   type="submit"
                   className="cta-button cta-primary full-width"
+                  disabled={loading}
                 >
-                  <i className="fas fa-paper-plane"></i> Send Message
+                  {loading ? (
+                    <>
+                      <i className="fas fa-spinner fa-spin"></i> Sending...
+                    </>
+                  ) : (
+                    <>
+                      <FaPaperPlane style={{ marginRight: "8px" }} /> Send
+                      Message
+                    </>
+                  )}{" "}
                 </button>
               </form>
             </div>

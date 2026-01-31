@@ -5,6 +5,7 @@ import {
   faEye,
   faEnvelope,
   faLock,
+  faUser,
   faArrowRight,
   faChartLine,
   faUsersCog,
@@ -16,6 +17,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import "../style/Login.css";
+import { login } from "../../services/authservice";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -23,12 +25,12 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [isFocused, setIsFocused] = useState({
-    email: false,
+    username: false,
     password: false,
   });
 
   const [formData, setFormData] = useState({
-    email: "",
+    username: "",
     password: "",
   });
 
@@ -61,13 +63,16 @@ const Login = () => {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    if (e) e.preventDefault();
+
     let newErrors = {};
-    if (formData.email.trim() === "") {
-      newErrors.email = "Email is required";
-    } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
-      newErrors.email = "Invalid email format";
+
+    // Validation
+    if (formData.username.trim() === "") {
+      newErrors.username = "Username is required";
     }
+
     if (formData.password.trim() === "") {
       newErrors.password = "Password is required";
     }
@@ -77,13 +82,39 @@ const Login = () => {
     if (Object.keys(newErrors).length === 0) {
       try {
         setLoading(true);
-        // Simulated API call
-        setTimeout(() => {
-          navigate("/dashboard");
-        }, 1000);
+
+        // Call the login API with username
+        const response = await login({
+          username: formData.username,
+          password: formData.password,
+        });
+
+        // Handle successful login
+        console.log("Login successful:", response);
+
+        // Store authentication data (adjust based on your backend response)
+        // For example:
+        // localStorage.setItem('token', response.token);
+        // localStorage.setItem('user', JSON.stringify(response.user));
+
+        // Redirect to dashboard
+        navigate("/dashboard");
       } catch (error) {
+        console.error("Login error:", error);
+
+        // Handle different error formats
+        let errorMessage = "Login failed. Please try again.";
+
+        if (error.message) {
+          errorMessage = error.message;
+        } else if (error.error) {
+          errorMessage = error.error;
+        } else if (typeof error === "string") {
+          errorMessage = error;
+        }
+
         setErrors({
-          response_error: "Invalid credentials. Please try again.",
+          response_error: errorMessage,
         });
       } finally {
         setLoading(false);
@@ -139,26 +170,6 @@ const Login = () => {
                 </div>
               </div>
 
-              {/* <div className="admin-feature">
-                <div className="feature-icon-wrapper">
-                  <FontAwesomeIcon icon={faUsersCog} />
-                </div>
-                <div className="feature-text">
-                  <h4>Team Management</h4>
-                  <p>Manage engineers, assign tasks, and track progress</p>
-                </div>
-              </div>
-
-              <div className="admin-feature">
-                <div className="feature-icon-wrapper">
-                  <FontAwesomeIcon icon={faDatabase} />
-                </div>
-                <div className="feature-text">
-                  <h4>Project Database</h4>
-                  <p>Access all project documents and specifications</p>
-                </div>
-              </div> */}
-
               <div className="admin-feature">
                 <div className="feature-icon-wrapper">
                   <FontAwesomeIcon icon={faEnvelope} />
@@ -197,25 +208,25 @@ const Login = () => {
               }}
             >
               <div className="input-field">
-                <label htmlFor="email">Admin Email</label>
+                <label htmlFor="username">Admin Username</label>
                 <div className="input-wrapper">
-                  <FontAwesomeIcon icon={faEnvelope} className="input-icon" />
+                  <FontAwesomeIcon icon={faUser} className="input-icon" />
                   <input
-                    id="email"
-                    type="email"
-                    name="email"
-                    value={formData.email}
+                    id="username"
+                    type="text"
+                    name="username"
+                    value={formData.username}
                     onChange={handleInputChange}
                     onKeyDown={handleKeyPressEnter}
-                    onFocus={() => handleFocus("email")}
-                    onBlur={() => handleBlur("email")}
-                    className={errors.email ? "error" : ""}
-                    placeholder="admin@engineering.com"
+                    onFocus={() => handleFocus("username")}
+                    onBlur={() => handleBlur("username")}
+                    className={errors.username ? "error" : ""}
+                    placeholder="Enter your username"
                   />
                   <div className="input-underline"></div>
                 </div>
-                {errors.email && (
-                  <span className="error-text">{errors.email}</span>
+                {errors.username && (
+                  <span className="error-text">{errors.username}</span>
                 )}
               </div>
 
@@ -249,17 +260,6 @@ const Login = () => {
                 )}
               </div>
 
-              {/* <div className="form-options">
-                <label className="checkbox-label">
-                  <input type="checkbox" />
-                  <span className="checkmark"></span>
-                  Remember this device
-                </label>
-                <Link to="/admin/forgot-password" className="forgot-link">
-                  Forgot password?
-                </Link>
-              </div> */}
-
               {errors.response_error && (
                 <div className="alert-error">
                   <span className="alert-icon">!</span>
@@ -278,23 +278,6 @@ const Login = () => {
                 )}
               </button>
             </form>
-
-            {/* <div className="form-footer">
-              <div className="security-info">
-                <FontAwesomeIcon icon={faShieldAlt} />
-                <div className="security-text">
-                  <strong>Enterprise Security</strong>
-                  <p>All data is encrypted and access is logged</p>
-                </div>
-              </div>
-
-              <div className="support-link">
-                <p>
-                  Need help?{" "}
-                  <Link to="/admin/support">Contact System Administrator</Link>
-                </p>
-              </div>
-            </div> */}
           </div>
         </div>
       </div>

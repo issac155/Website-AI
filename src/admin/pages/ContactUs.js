@@ -194,18 +194,20 @@ const ContactUs = () => {
 
   const getStatusBadge = (status) => {
     const statusConfig = {
-      new: { label: "New", class: "badge-new" },
-      pending: { label: "Pending", class: "badge-pending" },
-      responded: { label: "Responded", class: "badge-responded" },
+      new: { label: "New", class: "contact-badge-new" },
+      pending: { label: "Pending", class: "contact-badge-pending" },
+      responded: { label: "Responded", class: "contact-badge-responded" },
     };
 
     const config = statusConfig[status] || {
       label: status,
-      class: "badge-default",
+      class: "contact-badge-default",
     };
 
     return (
-      <span className={`status-badge ${config.class}`}>{config.label}</span>
+      <span className={`contact-status-badge ${config.class}`}>
+        {config.label}
+      </span>
     );
   };
 
@@ -227,36 +229,36 @@ const ContactUs = () => {
         <Header activeTab={activeTab} />
 
         <div className="contact-management">
-          <div className="page-header">
-            <div className="header-left">
+          <div className="contact-page-header">
+            <div className="contact-header-left">
               <h2>Contact Management</h2>
               <p>Manage all contact requests and inquiries</p>
             </div>
-            {/* <div className="header-right">
-              <button className="export-btn">Export CSV</button>
-              <button className="add-contact-btn">+ Add Contact</button>
+            {/* <div className="contact-header-right">
+              <button className="contact-export-btn">Export CSV</button>
+              <button className="contact-add-contact-btn">+ Add Contact</button>
             </div> */}
           </div>
 
-          <div className="controls-panel">
-            <div className="search-container">
+          <div className="contact-controls-panel">
+            <div className="contact-search-container">
               <FontAwesomeIcon icon={faSearch} className="search-icon" />
               <input
                 type="text"
                 placeholder="Search contacts by name, email, or company..."
                 value={searchTerm}
                 onChange={handleSearch}
-                className="search-input"
+                className="contact-search-input"
               />
             </div>
 
-            <div className="filters-container">
-              <div className="filter-group">
+            <div className="contact-filters-container">
+              <div className="contact-filter-group">
                 <FontAwesomeIcon icon={faFilter} />
                 <select
                   value={statusFilter}
                   onChange={(e) => handleStatusFilter(e.target.value)}
-                  className="filter-select"
+                  className="contact-filter-select"
                 >
                   <option value="all">All Status</option>
                   <option value="new">New</option>
@@ -264,6 +266,18 @@ const ContactUs = () => {
                   <option value="responded">Responded</option>
                 </select>
               </div>
+
+              {/* <div className="filter-group">
+                <FontAwesomeIcon icon={faSort} />
+                <select
+                  value={sortBy}
+                  onChange={(e) => handleSort(e.target.value)}
+                  className="contact-filter-select"
+                >
+                  <option value="date">Sort by Date</option>
+                  <option value="name">Sort by Name</option>
+                </select>
+              </div> */}
             </div>
           </div>
 
@@ -272,6 +286,7 @@ const ContactUs = () => {
               <thead>
                 <tr>
                   <th>Name</th>
+                  <th>Company</th>
                   <th>Contact Info</th>
                   <th>Subject</th>
                   <th>Date</th>
@@ -288,6 +303,7 @@ const ContactUs = () => {
                           <strong>{contact.name}</strong>
                         </div>
                       </td>
+                      <td>{contact.company}</td>
                       <td>
                         <div className="contact-info">
                           <div className="contact-email">
@@ -309,7 +325,7 @@ const ContactUs = () => {
                       </td>
                       <td>{getStatusBadge(contact.status)}</td>
                       <td>
-                        <div className="action-buttons">
+                        <div className="contact-action-buttons">
                           <button
                             className="action-btn view-btn"
                             onClick={() => handleContactClick(contact.id)}
@@ -317,9 +333,12 @@ const ContactUs = () => {
                             <FontAwesomeIcon icon={faEye} />
                             <span>View</span>
                           </button>
-
+                          {/* <button className="contact-action-btn contact-reply-btn">
+                            <FontAwesomeIcon icon={faReply} />
+                            <span>Reply</span>
+                          </button> */}
                           <button
-                            className="action-btn delete-btn"
+                            className="contact-action-btn contact-delete-btn"
                             onClick={() => deleteContact(contact.id)}
                           >
                             <FontAwesomeIcon icon={faTrash} />
@@ -331,7 +350,7 @@ const ContactUs = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="7" className="no-data">
+                    <td colSpan="7" className="contact-no-data">
                       No contacts found
                     </td>
                   </tr>
@@ -340,16 +359,16 @@ const ContactUs = () => {
             </table>
           </div>
 
-          <div className="table-footer">
-            <div className="pagination-info">
+          <div className="contact-table-footer">
+            <div className="contact-pagination-info">
               Showing {filteredContacts.length} of {contacts.length} contacts
             </div>
-            <div className="pagination-controls">
-              <button className="pagination-btn" disabled>
+            <div className="contact-pagination-controls">
+              <button className="contact-pagination-btn" disabled>
                 Previous
               </button>
-              <span className="page-number">1</span>
-              <button className="pagination-btn">Next</button>
+              <span className="contact-page-number">1</span>
+              <button className="contact-pagination-btn">Next</button>
             </div>
           </div>
         </div>
