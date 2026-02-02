@@ -4,19 +4,27 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEye,
   faTrash,
-  faReply,
   faPhone,
   faEnvelope,
   faCalendar,
   faFilter,
-  faSort,
   faSearch,
+  faExclamationTriangle,
+  faSpinner,
+  faCheckCircle,
+  faClock,
+  faExchangeAlt, // Added for status change
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import "../style/ContactUs.css";
 import Sidebar from "../components/layout/Sidebar";
 import Header from "../components/layout/Header";
 import ContactViewPopup from "./ContactView";
+import {
+  deleteContact,
+  getContact,
+  updateContactStatus,
+} from "../../services/contactservice"; // Added updateContactStatus
 
 const ContactUs = () => {
   const [contacts, setContacts] = useState([]);
@@ -25,200 +33,293 @@ const ContactUs = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [sortBy, setSortBy] = useState("date");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalContacts, setTotalContacts] = useState(0);
+  const [searchParams, setSearchParams] = useState({
+    sRead: "",
+    search: "",
+    page: 1,
+    limit: 10,
+  });
+
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
-  // Mock data - replace with API call
-  const [selectedContactId, setSelectedContactId] = useState(null);
+  const [selectedContact, setSelectedContact] = useState(null);
+  const [contactToDelete, setContactToDelete] = useState(null);
+  const [deletingContactId, setDeletingContactId] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [updatingContactId, setUpdatingContactId] = useState(null); // New state for tracking status update
 
-  const handleContactClick = (contactId) => {
-    setSelectedContactId(contactId);
+  // Fetch contacts from API
+  const fetchContacts = async (params = {}) => {
+    try {
+      setLoading(true);
+      const credentials = {
+        sRead: params.sRead || "",
+        search: params.search || "",
+        page: params.page || 1,
+        limit: params.limit || 10,
+      };
+
+      const response = await getContact(credentials);
+
+      if (response && response.data) {
+        setContacts(response.data);
+        setFilteredContacts(response.data);
+        setTotalContacts(response.total || response.data.length);
+        setTotalPages(response.pages || 1);
+
+        setSearchParams((prev) => ({
+          ...prev,
+          page: response.page || 1,
+        }));
+      }
+    } catch (error) {
+      console.error("Error fetching contacts:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Initial fetch
+  useEffect(() => {
+    fetchContacts(searchParams);
+  }, []);
+
+  // Handle search with API call
+  const handleSearch = (e) => {
+    const term = e.target.value;
+    setSearchTerm(term);
+
+    fetchContacts({
+      ...searchParams,
+      search: term,
+      page: 1,
+    });
+  };
+
+  // Status filter handler
+  const handleStatusFilter = (status) => {
+    setStatusFilter(status);
+
+    if (status !== "all") {
+      const params = {
+        ...searchParams,
+        sRead: status,
+        page: 1,
+      };
+      fetchContacts(params);
+    } else {
+      const params = { ...searchParams, sRead: "", page: 1 };
+      fetchContacts(params);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return dateString;
+    }
+  };
+
+  // Toggle contact status (Pending ↔ Responded)
+  const handleToggleStatus = async (contact) => {
+    const contactId = contact.id || contact._id;
+    const currentStatus = parseInt(contact.isRead) || 0;
+    const newStatus = currentStatus === 0 ? 1 : 0;
+
+    // Set updating state
+    setUpdatingContactId(contactId);
+
+    try {
+      // Call API to update status
+      const response = await updateContactStatus(contactId, {
+        isRead: newStatus,
+      });
+
+      if (response && response.success) {
+        // Update local state
+        const updatedContact = { ...contact, isRead: newStatus };
+
+        setContacts(
+          contacts.map((c) =>
+            (c.id || c._id) === contactId ? updatedContact : c,
+          ),
+        );
+
+        setFilteredContacts(
+          filteredContacts.map((c) =>
+            (c.id || c._id) === contactId ? updatedContact : c,
+          ),
+        );
+
+        // If viewing the contact in popup, update it
+        if (
+          selectedContact &&
+          (selectedContact.id || selectedContact._id) === contactId
+        ) {
+          setSelectedContact(updatedContact);
+        }
+
+        console.log(
+          `Status updated to ${newStatus === 0 ? "Pending" : "Responded"}`,
+        );
+      } else {
+        throw new Error("Failed to update status");
+      }
+    } catch (error) {
+      console.error("Error updating contact status:", error);
+      alert("Failed to update contact status");
+    } finally {
+      // Reset updating state
+      setUpdatingContactId(null);
+    }
+  };
+
+  // Client-side sorting
+  const handleSort = (criteria) => {
+    setSortBy(criteria);
+
+    let sorted = [...filteredContacts];
+    if (criteria === "date") {
+      sorted.sort(
+        (a, b) =>
+          new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date),
+      );
+    } else if (criteria === "name") {
+      sorted.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    setFilteredContacts(sorted);
+  };
+
+  // Pagination handlers
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      const nextPage = currentPage + 1;
+      setCurrentPage(nextPage);
+      const params = { ...searchParams, page: nextPage };
+      fetchContacts(params);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      const prevPage = currentPage - 1;
+      setCurrentPage(prevPage);
+      const params = { ...searchParams, page: prevPage };
+      fetchContacts(params);
+    }
+  };
+
+  const handleContactClick = (contact) => {
+    setSelectedContact(contact);
   };
 
   const handleClosePopup = () => {
-    setSelectedContactId(null);
+    setSelectedContact(null);
   };
 
   const handleUpdateContact = (updatedContact) => {
-    // Update the contact in your list
     setContacts(
       contacts.map((contact) =>
         contact.id === updatedContact.id ? updatedContact : contact,
       ),
     );
+    setFilteredContacts(
+      filteredContacts.map((contact) =>
+        contact.id === updatedContact.id ? updatedContact : contact,
+      ),
+    );
   };
 
-  useEffect(() => {
-    const mockContacts = [
-      {
-        id: 1,
-        name: "Ahmed Al-Maskari",
-        email: "ahmed@example.com",
-        phone: "+968 1234 5678",
-        subject: "Project Inquiry",
-        message:
-          "I would like to inquire about your MEP services for our new building project in Muscat.",
-        date: "2024-01-15",
-        status: "new",
-        company: "Oman Construction LLC",
-      },
-      {
-        id: 2,
-        name: "Sarah Johnson",
-        email: "sarah@engineering.com",
-        phone: "+968 9876 5432",
-        subject: "Technical Support",
-        message:
-          "Need assistance with ELV system configuration in our commercial complex.",
-        date: "2024-01-14",
-        status: "responded",
-        company: "Modern Engineering Co.",
-      },
-      {
-        id: 3,
-        name: "Mohammed Al-Harthy",
-        email: "mohammed@omanoil.com",
-        phone: "+968 2468 1357",
-        subject: "Lighting Design Consultation",
-        message:
-          "Looking for innovative lighting solutions for our new headquarters.",
-        date: "2024-01-13",
-        status: "pending",
-        company: "Oman Oil & Gas",
-      },
-      {
-        id: 4,
-        name: "Fatima Al-Said",
-        email: "fatima@hospital.om",
-        phone: "+968 3698 7412",
-        subject: "Emergency Services",
-        message: "Urgent MEP maintenance required for our hospital facility.",
-        date: "2024-01-12",
-        status: "new",
-        company: "Royal Hospital",
-      },
-      {
-        id: 5,
-        name: "David Wilson",
-        email: "david@international.com",
-        phone: "+968 8520 9630",
-        subject: "Partnership Proposal",
-        message:
-          "Interested in discussing potential partnership opportunities.",
-        date: "2024-01-11",
-        status: "responded",
-        company: "International Engineering Group",
-      },
-    ];
+  // Show delete confirmation popup
+  const showDeleteConfirmation = (contact) => {
+    setContactToDelete(contact);
+  };
 
-    setContacts(mockContacts);
-    setFilteredContacts(mockContacts);
-    setLoading(false);
-  }, []);
+  // Handle delete confirmation
+  const confirmDelete = async () => {
+    if (!contactToDelete) return;
 
-  const handleSearch = (e) => {
-    const term = e.target.value.toLowerCase();
-    setSearchTerm(term);
+    const contactId = contactToDelete.id || contactToDelete._id;
 
-    let filtered = contacts;
+    // Set deleting states
+    setIsDeleting(true);
+    setDeletingContactId(contactId);
 
-    // Apply search filter
-    if (term) {
-      filtered = filtered.filter(
-        (contact) =>
-          contact.name.toLowerCase().includes(term) ||
-          contact.email.toLowerCase().includes(term) ||
-          contact.subject.toLowerCase().includes(term) ||
-          contact.company.toLowerCase().includes(term),
+    try {
+      const response = await deleteContact(contactId);
+
+      // Update local state
+      setContacts(
+        contacts.filter((contact) => (contact.id || contact._id) !== contactId),
       );
-    }
-
-    // Apply status filter
-    if (statusFilter !== "all") {
-      filtered = filtered.filter((contact) => contact.status === statusFilter);
-    }
-
-    // Apply sorting
-    filtered = [...filtered].sort((a, b) => {
-      if (sortBy === "date") {
-        return new Date(b.date) - new Date(a.date);
-      } else if (sortBy === "name") {
-        return a.name.localeCompare(b.name);
-      }
-      return 0;
-    });
-
-    setFilteredContacts(filtered);
-  };
-
-  const handleStatusFilter = (status) => {
-    setStatusFilter(status);
-    let filtered = contacts;
-
-    if (status !== "all") {
-      filtered = filtered.filter((contact) => contact.status === status);
-    }
-
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (contact) =>
-          contact.name.toLowerCase().includes(searchTerm) ||
-          contact.email.toLowerCase().includes(searchTerm),
-      );
-    }
-
-    setFilteredContacts(filtered);
-  };
-
-  const handleSort = (criteria) => {
-    setSortBy(criteria);
-    const sorted = [...filteredContacts].sort((a, b) => {
-      if (criteria === "date") {
-        return new Date(b.date) - new Date(a.date);
-      } else if (criteria === "name") {
-        return a.name.localeCompare(b.name);
-      }
-      return 0;
-    });
-    setFilteredContacts(sorted);
-  };
-
-  const deleteContact = (id) => {
-    if (window.confirm("Are you sure you want to delete this contact?")) {
-      setContacts(contacts.filter((contact) => contact.id !== id));
       setFilteredContacts(
-        filteredContacts.filter((contact) => contact.id !== id),
+        filteredContacts.filter(
+          (contact) => (contact.id || contact._id) !== contactId,
+        ),
       );
+
+      console.log("Contact deleted successfully");
+    } catch (error) {
+      console.error("Error deleting contact:", error);
+      alert("Failed to delete contact");
+    } finally {
+      // Reset deleting states
+      setIsDeleting(false);
+      setDeletingContactId(null);
+      setContactToDelete(null);
     }
+  };
+
+  // Cancel delete operation
+  const cancelDelete = () => {
+    setContactToDelete(null);
   };
 
   const getStatusBadge = (status) => {
+    const statusString = status.toString();
+
     const statusConfig = {
-      new: { label: "New", class: "contact-badge-new" },
-      pending: { label: "Pending", class: "contact-badge-pending" },
-      responded: { label: "Responded", class: "contact-badge-responded" },
+      0: { label: "Pending", class: "contact-badge-pending", icon: faClock },
+      1: {
+        label: "Responded",
+        class: "contact-badge-responded",
+        icon: faCheckCircle,
+      },
     };
 
-    const config = statusConfig[status] || {
-      label: status,
+    const config = statusConfig[statusString] || {
+      label: "Unknown",
       class: "contact-badge-default",
+      icon: faExclamationTriangle,
     };
 
     return (
       <span className={`contact-status-badge ${config.class}`}>
+        <FontAwesomeIcon icon={config.icon} style={{ marginRight: "5px" }} />
         {config.label}
       </span>
     );
   };
 
-  if (loading) {
-    return <div className="loading">Loading contacts...</div>;
-  }
-
   return (
     <div className="dashboard-layout">
-      {" "}
-      {/* Updated class name */}
       <Sidebar
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
@@ -234,10 +335,6 @@ const ContactUs = () => {
               <h2>Contact Management</h2>
               <p>Manage all contact requests and inquiries</p>
             </div>
-            {/* <div className="contact-header-right">
-              <button className="contact-export-btn">Export CSV</button>
-              <button className="contact-add-contact-btn">+ Add Contact</button>
-            </div> */}
           </div>
 
           <div className="contact-controls-panel">
@@ -261,124 +358,242 @@ const ContactUs = () => {
                   className="contact-filter-select"
                 >
                   <option value="all">All Status</option>
-                  <option value="new">New</option>
-                  <option value="pending">Pending</option>
-                  <option value="responded">Responded</option>
+                  <option value="0">Pending</option>
+                  <option value="1">Responded</option>
                 </select>
               </div>
-
-              {/* <div className="filter-group">
-                <FontAwesomeIcon icon={faSort} />
-                <select
-                  value={sortBy}
-                  onChange={(e) => handleSort(e.target.value)}
-                  className="contact-filter-select"
-                >
-                  <option value="date">Sort by Date</option>
-                  <option value="name">Sort by Name</option>
-                </select>
-              </div> */}
             </div>
           </div>
 
-          <div className="contacts-table-container">
-            <table className="contacts-table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Company</th>
-                  <th>Contact Info</th>
-                  <th>Subject</th>
-                  <th>Date</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredContacts.length > 0 ? (
-                  filteredContacts.map((contact) => (
-                    <tr key={contact.id}>
-                      <td>
-                        <div className="contact-name">
-                          <strong>{contact.name}</strong>
-                        </div>
-                      </td>
-                      <td>{contact.company}</td>
-                      <td>
-                        <div className="contact-info">
-                          <div className="contact-email">
-                            <FontAwesomeIcon icon={faEnvelope} />
-                            {contact.email}
-                          </div>
-                          <div className="contact-phone">
-                            <FontAwesomeIcon icon={faPhone} />
-                            {contact.phone}
-                          </div>
-                        </div>
-                      </td>
-                      <td>{contact.subject}</td>
-                      <td>
-                        <div className="contact-date">
-                          <FontAwesomeIcon icon={faCalendar} />
-                          {contact.date}
-                        </div>
-                      </td>
-                      <td>{getStatusBadge(contact.status)}</td>
-                      <td>
-                        <div className="contact-action-buttons">
-                          <button
-                            className="action-btn view-btn"
-                            onClick={() => handleContactClick(contact.id)}
-                          >
-                            <FontAwesomeIcon icon={faEye} />
-                            <span>View</span>
-                          </button>
-                          {/* <button className="contact-action-btn contact-reply-btn">
-                            <FontAwesomeIcon icon={faReply} />
-                            <span>Reply</span>
-                          </button> */}
-                          <button
-                            className="contact-action-btn contact-delete-btn"
-                            onClick={() => deleteContact(contact.id)}
-                          >
-                            <FontAwesomeIcon icon={faTrash} />
-                            <span>Delete</span>
-                          </button>
-                        </div>
-                      </td>
+          {loading && contacts.length === 0 ? (
+            <div className="loading">Loading contacts...</div>
+          ) : (
+            <>
+              <div className="contacts-table-container">
+                <table className="contacts-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Contact Info</th>
+                      <th>Service</th>
+                      <th>Date</th>
+                      <th>Status</th>
+                      <th>Actions</th>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="7" className="contact-no-data">
-                      No contacts found
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                  </thead>
+                  <tbody>
+                    {filteredContacts.length > 0 ? (
+                      filteredContacts.map((contact) => {
+                        const contactId = contact.id || contact._id;
+                        const isDeletingThis = deletingContactId === contactId;
+                        const isUpdatingThis = updatingContactId === contactId;
+                        const isPending = parseInt(contact.isRead) === 0;
 
-          <div className="contact-table-footer">
-            <div className="contact-pagination-info">
-              Showing {filteredContacts.length} of {contacts.length} contacts
+                        return (
+                          <tr key={contactId}>
+                            <td>
+                              <div className="contact-name">
+                                <strong>{contact.name}</strong>
+                                {contact.company && (
+                                  <div className="contact-company">
+                                    {contact.company}
+                                  </div>
+                                )}
+                              </div>
+                            </td>
+                            <td>
+                              <div className="contact-info">
+                                <div className="contact-email">
+                                  <FontAwesomeIcon icon={faEnvelope} />
+                                  {contact.email}
+                                </div>
+                                <div className="contact-phone">
+                                  <FontAwesomeIcon icon={faPhone} />
+                                  {contact.phone ||
+                                    contact.phoneNumber ||
+                                    "N/A"}
+                                </div>
+                              </div>
+                            </td>
+                            <td>{contact.service || "No Service"}</td>
+                            <td>
+                              <div className="contact-date">
+                                <FontAwesomeIcon icon={faCalendar} />
+                                {formatDate(contact.created_at)}
+                              </div>
+                            </td>
+                            <td>
+                              <div className="contact-status-cell">
+                                {getStatusBadge(contact.isRead)}
+                                <button
+                                  className="contact-status-toggle-btn"
+                                  onClick={() => handleToggleStatus(contact)}
+                                  disabled={isDeleting || isUpdatingThis}
+                                  title={`Mark as ${isPending ? "Responded" : "Pending"}`}
+                                >
+                                  {isUpdatingThis ? (
+                                    <FontAwesomeIcon
+                                      icon={faSpinner}
+                                      className="contact-fa-spin"
+                                    />
+                                  ) : (
+                                    <FontAwesomeIcon icon={faExchangeAlt} />
+                                  )}
+                                </button>
+                              </div>
+                            </td>
+                            <td>
+                              <div className="contact-action-buttons">
+                                <button
+                                  className="contact-action-btn contact-view-btn"
+                                  onClick={() => handleContactClick(contact)}
+                                  disabled={isDeleting || isUpdatingThis}
+                                >
+                                  <FontAwesomeIcon icon={faEye} />
+                                  <span>View</span>
+                                </button>
+                                <button
+                                  className="contact-action-btn contact-delete-btn"
+                                  onClick={() =>
+                                    showDeleteConfirmation(contact)
+                                  }
+                                  disabled={
+                                    isDeleting ||
+                                    isDeletingThis ||
+                                    isUpdatingThis
+                                  }
+                                >
+                                  {isDeletingThis ? (
+                                    <>
+                                      <FontAwesomeIcon
+                                        icon={faSpinner}
+                                        className="fa-spin"
+                                      />
+                                      <span>Deleting...</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <FontAwesomeIcon icon={faTrash} />
+                                      <span>Delete</span>
+                                    </>
+                                  )}
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    ) : (
+                      <tr>
+                        <td colSpan="7" className="contact-no-data">
+                          No contacts found
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="contact-table-footer">
+                <div className="contact-pagination-info">
+                  Showing {filteredContacts.length} of {totalContacts} contacts
+                  {searchParams.page > 1 &&
+                    ` (Page ${searchParams.page} of ${totalPages})`}
+                </div>
+                <div className="contact-pagination-controls">
+                  <button
+                    className="contact-pagination-btn"
+                    onClick={handlePrevPage}
+                    disabled={currentPage <= 1 || isDeleting}
+                  >
+                    Previous
+                  </button>
+                  <span className="contact-page-number">{currentPage}</span>
+                  <button
+                    className="contact-pagination-btn"
+                    onClick={handleNextPage}
+                    disabled={currentPage >= totalPages || isDeleting}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </main>
+
+      {/* Contact View Popup */}
+      {selectedContact && (
+        <ContactViewPopup
+          contact={selectedContact}
+          onClose={handleClosePopup}
+          onUpdateContact={handleUpdateContact}
+          onToggleStatus={() => handleToggleStatus(selectedContact)} // Pass toggle function to popup
+        />
+      )}
+
+      {/* Delete Confirmation Popup */}
+      {contactToDelete && (
+        <div className="contact-confirmation-popup-overlay">
+          <div className="contact-confirmation-popup">
+            <div className="contact-confirmation-popup-header">
+              <FontAwesomeIcon
+                icon={faExclamationTriangle}
+                className="contact-confirmation-warning-icon"
+              />
+              <h3>Delete Contact</h3>
             </div>
-            <div className="contact-pagination-controls">
-              <button className="contact-pagination-btn" disabled>
-                Previous
+
+            <div className="contact-confirmation-popup-content">
+              <p>Are you sure you want to delete the contact for:</p>
+              <div className="contact-confirmation-contact-details">
+                <p>
+                  <strong>Name:</strong> {contactToDelete.name}
+                </p>
+                <p>
+                  <strong>Email:</strong> {contactToDelete.email}
+                </p>
+                <p>
+                  <strong>Date:</strong>{" "}
+                  {formatDate(contactToDelete.created_at)}
+                </p>
+              </div>
+              <p className="contact-confirmation-warning-text">
+                This action cannot be undone. All contact information will be
+                permanently deleted.
+              </p>
+            </div>
+
+            <div className="contact-confirmation-popup-actions">
+              <button
+                className="contact-confirmation-btn contact-confirmation-cancel-btn"
+                onClick={cancelDelete}
+                disabled={isDeleting}
+              >
+                Cancel
               </button>
-              <span className="contact-page-number">1</span>
-              <button className="contact-pagination-btn">Next</button>
+              <button
+                className="contact-confirmation-btn contact-confirmation-delete-btn"
+                onClick={confirmDelete}
+                disabled={isDeleting}
+              >
+                {isDeleting ? (
+                  <>
+                    <FontAwesomeIcon
+                      icon={faSpinner}
+                      className="fa-spin"
+                      style={{ marginRight: "8px" }}
+                    />
+                    Deleting...
+                  </>
+                ) : (
+                  "Delete Contact"
+                )}
+              </button>
             </div>
           </div>
         </div>
-      </main>
-      {selectedContactId && (
-        <ContactViewPopup
-          contactId={selectedContactId}
-          onClose={handleClosePopup}
-          onUpdateContact={handleUpdateContact}
-        />
       )}
     </div>
   );

@@ -14,81 +14,147 @@ import {
   faDownload,
   faPaperclip,
   faTimes,
+  faEye,
+  faEyeSlash,
 } from "@fortawesome/free-solid-svg-icons";
 import "../style/ContactView.css";
 
-const ContactViewPopup = ({ contactId, onClose, onUpdateContact }) => {
-  const [contact, setContact] = useState(null);
-  const [loading, setLoading] = useState(true);
+const ContactViewPopup = ({ contact, onClose, onUpdateContact }) => {
   const [replyText, setReplyText] = useState("");
   const [notes, setNotes] = useState("");
+  const [showReplyForm, setShowReplyForm] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedContact, setEditedContact] = useState(null);
 
+  // Initialize editedContact when contact changes
   useEffect(() => {
-    // Mock API call
-    const mockContact = {
-      id: contactId,
-      name: "Ahmed Al-Maskari",
-      email: "ahmed@example.com",
-      phone: "+968 1234 5678",
-      subject: "Project Inquiry",
-      message:
-        "I would like to inquire about your MEP services for our new building project in Muscat. We are planning a 20-story commercial building with full MEP requirements including HVAC, electrical, plumbing, and fire protection systems. Could you please provide a quotation and timeline for the complete project?",
-      date: "2024-01-15",
-      status: "new",
-      company: "Oman Construction LLC",
-      address: "Muscat, Oman",
-      projectType: "Commercial Building",
-      budget: "1,500,000 OMR",
-      timeline: "12-18 months",
-      attachments: ["project_specs.pdf", "site_plan.jpg"],
+    if (contact) {
+      setEditedContact({ ...contact });
+    }
+  }, [contact]);
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return dateString;
+    }
+  };
+
+  const getStatusBadge = (status) => {
+    const statusConfig = {
+      0: { label: "Pending", class: "pending", color: "#f97316" },
+      1: { label: "Responded", class: "responded", color: "#10b981" },
+      pending: { label: "Pending", class: "pending", color: "#f97316" },
+      responded: { label: "Responded", class: "responded", color: "#10b981" },
+      true: { label: "Responded", class: "responded", color: "#10b981" },
+      false: { label: "Pending", class: "pending", color: "#f97316" },
     };
 
-    setContact(mockContact);
-    setLoading(false);
-  }, [contactId]);
+    const statusValue = status?.toString();
+    const config = statusConfig[statusValue] || {
+      label: "Unknown",
+      class: "unknown",
+      color: "#6b7280",
+    };
+
+    return (
+      <span
+        className={`contactview-status-badge ${config.class}`}
+        style={{ backgroundColor: config.color }}
+      >
+        {config.label}
+      </span>
+    );
+  };
 
   const handleReply = () => {
     if (replyText.trim()) {
+      // In real app, send email API call here
       alert("Reply sent successfully!");
       setReplyText("");
-      // In real app, update contact status
+      setShowReplyForm(false);
+
+      // Update contact status to responded (1)
+      const updatedContact = {
+        ...contact,
+        isRead: "1",
+        lastReplied: new Date().toISOString(),
+      };
+
       if (onUpdateContact) {
-        onUpdateContact({ ...contact, status: "responded" });
+        onUpdateContact(updatedContact);
       }
     }
   };
 
   const handleSaveNotes = () => {
     if (notes.trim()) {
+      // In real app, save notes to API
       alert("Notes saved successfully!");
+
+      const updatedContact = {
+        ...contact,
+        notes: notes,
+      };
+
+      if (onUpdateContact) {
+        onUpdateContact(updatedContact);
+      }
     }
   };
 
   const handleDelete = () => {
     if (window.confirm("Are you sure you want to delete this contact?")) {
+      // In real app, delete API call
       alert("Contact deleted!");
       onClose();
     }
   };
 
   const handleStatusChange = (newStatus) => {
-    const updatedContact = { ...contact, status: newStatus };
-    setContact(updatedContact);
+    const updatedContact = {
+      ...contact,
+      isRead: newStatus,
+    };
+
     if (onUpdateContact) {
       onUpdateContact(updatedContact);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="contactview-popup-overlay">
-        <div className="contactview-popup-content contactview-loading">
-          <div className="contactview-loading-spinner"></div>
-          <p>Loading contact details...</p>
-        </div>
-      </div>
-    );
-  }
+  const handleSaveEdit = () => {
+    if (editedContact) {
+      if (onUpdateContact) {
+        onUpdateContact(editedContact);
+      }
+      setIsEditing(false);
+      alert("Contact updated successfully!");
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditedContact({ ...contact });
+    setIsEditing(false);
+  };
+
+  const handleInputChange = (field, value) => {
+    setEditedContact((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
 
   if (!contact) {
     return (
@@ -111,10 +177,7 @@ const ContactViewPopup = ({ contactId, onClose, onUpdateContact }) => {
       >
         <div className="contactview-popup-header">
           <div className="contactview-popup-title">
-            <h2>{contact.subject}</h2>
-            <div className={`contactview-status-badge ${contact.status}`}>
-              {contact.status.charAt(0).toUpperCase() + contact.status.slice(1)}
-            </div>
+            <h2>{contact.service || "No Service"}</h2>
           </div>
           <button className="contactview-close-popup-btn" onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} />
@@ -122,56 +185,204 @@ const ContactViewPopup = ({ contactId, onClose, onUpdateContact }) => {
         </div>
 
         <div className="contactview-popup-body">
-          {/* Status Toggle */}
+          {/* Action Buttons */}
+
+          {/* Reply Form */}
+          {showReplyForm && (
+            <div className="contactview-reply-form">
+              <h4>Reply to {contact.name}</h4>
+              <div className="contactview-email-preview">
+                <div>
+                  <strong>To:</strong> {contact.email}
+                </div>
+                <div>
+                  <strong>Subject:</strong> Re: {contact.subject}
+                </div>
+              </div>
+              <textarea
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value)}
+                placeholder="Type your reply here..."
+                rows={5}
+                className="contactview-reply-textarea"
+              />
+              <div className="contactview-reply-actions">
+                <button onClick={handleReply} className="contactview-send-btn">
+                  Send Reply
+                </button>
+                <button
+                  onClick={() => setShowReplyForm(false)}
+                  className="contactview-cancel-btn"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Contact Information */}
           <div className="contactview-info-section">
             <div className="contactview-header">
-              <h3>{contact.name}</h3>
-              <span className="contactview-company-badge">
-                {contact.company}
-              </span>
+              <h3>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editedContact?.name || ""}
+                    onChange={(e) => handleInputChange("name", e.target.value)}
+                    className="contactview-edit-input"
+                  />
+                ) : (
+                  contact.name || "No Name"
+                )}
+              </h3>
+              {contact.company && (
+                <span className="contactview-company-badge">
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={editedContact?.company || ""}
+                      onChange={(e) =>
+                        handleInputChange("company", e.target.value)
+                      }
+                      className="contactview-edit-input company"
+                    />
+                  ) : (
+                    contact.company
+                  )}
+                </span>
+              )}
             </div>
 
             <div className="contactview-details-grid">
               <div className="contactview-detail-item">
                 <FontAwesomeIcon icon={faEnvelope} />
-                <span>{contact.email}</span>
+                <span>
+                  {isEditing ? (
+                    <input
+                      type="email"
+                      value={editedContact?.email || ""}
+                      onChange={(e) =>
+                        handleInputChange("email", e.target.value)
+                      }
+                      className="contactview-edit-input"
+                    />
+                  ) : (
+                    contact.email || "No Email"
+                  )}
+                </span>
               </div>
               <div className="contactview-detail-item">
                 <FontAwesomeIcon icon={faPhone} />
-                <span>{contact.phone}</span>
+                <span>
+                  {isEditing ? (
+                    <input
+                      type="tel"
+                      value={
+                        editedContact?.phone || editedContact?.phoneNumber || ""
+                      }
+                      onChange={(e) =>
+                        handleInputChange("phone", e.target.value)
+                      }
+                      className="contactview-edit-input"
+                    />
+                  ) : (
+                    contact.phone || contact.phoneNumber || "N/A"
+                  )}
+                </span>
               </div>
-              <div className="contactview-detail-item">
-                <FontAwesomeIcon icon={faBuilding} />
-                <span>{contact.address}</span>
-              </div>
+              {contact.address && (
+                <div className="contactview-detail-item">
+                  <FontAwesomeIcon icon={faBuilding} />
+                  <span>
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        value={editedContact?.address || ""}
+                        onChange={(e) =>
+                          handleInputChange("address", e.target.value)
+                        }
+                        className="contactview-edit-input"
+                      />
+                    ) : (
+                      contact.address
+                    )}
+                  </span>
+                </div>
+              )}
               <div className="contactview-detail-item">
                 <FontAwesomeIcon icon={faCalendar} />
-                <span>Received: {contact.date}</span>
+                <span>
+                  Received:{" "}
+                  {formatDate(
+                    contact.created_at || contact.createdAt || contact.date,
+                  )}
+                </span>
               </div>
             </div>
 
-            {/* <div className="contactview-project-details">
-              <div className="contactview-project-item">
-                <strong>Project Type:</strong> {contact.projectType}
+            {/* Additional Information if exists */}
+            {(contact.projectType || contact.budget || contact.timeline) && (
+              <div className="contactview-project-details">
+                {contact.projectType && (
+                  <div className="contactview-project-item">
+                    <strong>Project Type:</strong> {contact.projectType}
+                  </div>
+                )}
+                {contact.budget && (
+                  <div className="contactview-project-item">
+                    <strong>Budget:</strong> {contact.budget}
+                  </div>
+                )}
+                {contact.timeline && (
+                  <div className="contactview-project-item">
+                    <strong>Timeline:</strong> {contact.timeline}
+                  </div>
+                )}
               </div>
-              <div className="contactview-project-item">
-                <strong>Budget:</strong> {contact.budget}
-              </div>
-              <div className="contactview-project-item">
-                <strong>Timeline:</strong> {contact.timeline}
-              </div>
-            </div> */}
+            )}
           </div>
 
           {/* Message */}
           <div className="contactview-message-section">
             <h4>Message</h4>
-            <div className="contactview-message-content">{contact.message}</div>
+            <div className="contactview-message-content">
+              {isEditing ? (
+                <textarea
+                  value={editedContact?.message || ""}
+                  onChange={(e) => handleInputChange("message", e.target.value)}
+                  className="contactview-edit-textarea"
+                  rows={6}
+                />
+              ) : (
+                contact.message || "No message provided"
+              )}
+            </div>
           </div>
 
           {/* Attachments */}
+          {contact.attachments && contact.attachments.length > 0 && (
+            <div className="contactview-attachments-section">
+              <h4>
+                <FontAwesomeIcon icon={faPaperclip} />
+                Attachments ({contact.attachments.length})
+              </h4>
+              <div className="contactview-attachments-list">
+                {contact.attachments.map((attachment, index) => (
+                  <div key={index} className="contactview-attachment-item">
+                    <FontAwesomeIcon icon={faPaperclip} />
+                    <span>{attachment}</span>
+                    <button className="contactview-download-btn">
+                      <FontAwesomeIcon icon={faDownload} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Notes Section */}
+
+          {/* Save Edit Button (when editing) */}
         </div>
       </div>
     </div>
