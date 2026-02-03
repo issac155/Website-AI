@@ -591,3 +591,85 @@
   color: #6c757d;
   border: 1px solid #e9ecef;
 }
+/* Contact Loader Styles */
+.contact-loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.contact-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.contact-loader .fa-spin {
+  font-size: 3rem;
+  color: #cea521;
+  animation: spin 1s linear infinite;
+}
+
+.contact-loader p {
+  font-size: 1.1rem;
+  color: #666;
+  font-weight: 500;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Skeleton Loader (Optional Alternative) */
+.contact-skeleton-loader {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+}
+
+.contact-skeleton-row {
+  display: flex;
+  gap: 15px;
+  padding: 15px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.contact-skeleton-cell {
+  height: 20px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Adjust existing spinner styles */
+.contact-fa-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Loading state for table */
+.contacts-table-container.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}

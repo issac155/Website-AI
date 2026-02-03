@@ -19,6 +19,7 @@ import WebLayout from "./layouts/WebLayout";
 import DashboardHome from "./admin/pages/DashboardHome";
 import ContactUs from "./admin/pages/ContactUs";
 import ContactView from "./admin/pages/ContactView";
+import ChangePassword from "./admin/pages/ChangePassword";
 
 function App() {
   return (
@@ -119,7 +120,7 @@ function App() {
         <Route path="/admin" element={<LoginPage />} />
         <Route path="/dashboard" element={<DashboardHome />} />
         <Route path="/contacts" element={<ContactUs />} />
-        <Route path="/contacts/:id" element={<ContactView />} />
+        <Route path="/change-password" element={<ChangePassword />} />
       </Routes>
     </Router>
   );

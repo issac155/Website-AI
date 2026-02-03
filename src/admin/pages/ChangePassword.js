@@ -1,241 +1,374 @@
-// ChangePasswordPopup3.js - Step-by-Step
+// ContactUs.js
 import React, { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faLock,
-  faEye,
-  faEyeSlash,
-  faCheckCircle,
-  faArrowRight,
-  faShieldCheck,
-} from "@fortawesome/free-solid-svg-icons";
-import "../style/ChangePasswordPopup.css";
+  FiEye,
+  FiEyeOff,
+  FiLock,
+  FiCheck,
+  FiAlertCircle,
+  FiShield,
+} from "react-icons/fi";
 
-const ChangePasswordPopup = ({ onClose }) => {
-  const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
-    current: "",
-    new: "",
-    confirm: "",
+import "../style/ChangePassword.css";
+import Sidebar from "../components/layout/Sidebar";
+import Header from "../components/layout/Header";
+import { getUserDetails } from "../../utils/localStorageKeys";
+import { changepassword } from "../../services/authservice";
+const ChangePassword = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("contact");
+
+  // Password state
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
-  const [showPassword, setShowPassword] = useState(false);
-  const [passwordStrength, setPasswordStrength] = useState(0);
 
-  const steps = [
-    {
-      number: 1,
-      title: "Verify Identity",
-      description: "Enter your current password",
-    },
-    {
-      number: 2,
-      title: "Set New Password",
-      description: "Create a strong new password",
-    },
-    {
-      number: 3,
-      title: "Confirmation",
-      description: "Confirm your new password",
-    },
-  ];
+  // UI state
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState({ type: "", text: "" });
+  const userDetsils = getUserDetails();
+  console.log(userDetsils);
+  // Password strength indicators
+  const [passwordStrength, setPasswordStrength] = useState({
+    length: false,
+    uppercase: false,
+    lowercase: false,
+    number: false,
+    special: false,
+  });
 
-  const calculateStrength = (password) => {
-    let strength = 0;
-    if (password.length >= 8) strength += 25;
-    if (/[A-Z]/.test(password)) strength += 25;
-    if (/[a-z]/.test(password)) strength += 25;
-    if (/\d/.test(password) || /[^A-Za-z0-9]/.test(password)) strength += 25;
-    return strength;
+  const checkPasswordStrength = (password) => {
+    setPasswordStrength({
+      length: password.length >= 8,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      number: /[0-9]/.test(password),
+      special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+    });
   };
 
-  const handleNext = () => {
-    if (step < 3) {
-      setStep(step + 1);
-    } else {
-      // Submit form
-      onClose();
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    if (name === "newPassword") {
+      checkPasswordStrength(value);
+    }
+
+    // Clear error for this field when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
     }
   };
 
-  const handleBack = () => {
-    if (step > 1) {
-      setStep(step - 1);
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!passwordData.currentPassword.trim()) {
+      newErrors.currentPassword = "Current password is required";
+    }
+
+    if (!passwordData.newPassword.trim()) {
+      newErrors.newPassword = "New password is required";
+    } else if (passwordData.newPassword.length < 8) {
+      newErrors.newPassword = "Password must be at least 8 characters";
+    }
+
+    if (!passwordData.confirmPassword.trim()) {
+      newErrors.confirmPassword = "Please confirm your password";
+    } else if (passwordData.newPassword !== passwordData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+
+    if (passwordData.currentPassword === passwordData.newPassword) {
+      newErrors.newPassword =
+        "New password must be different from current password";
+    }
+
+    return newErrors;
+  };
+
+  const calculatePasswordStrengthScore = () => {
+    const criteria = Object.values(passwordStrength);
+    const passed = criteria.filter((c) => c).length;
+    return Math.floor((passed / criteria.length) * 100);
+  };
+
+  const getStrengthColor = (score) => {
+    if (score < 40) return "#ff4d4d";
+    if (score < 70) return "#ffa500";
+    return "#52c41a";
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    setIsSubmitting(true);
+    setMessage({ type: "", text: "" });
+
+    try {
+      // Simulate API call
+      //   await new Promise((resolve) => setTimeout(resolve, 1500));
+      await changepassword({
+        userId: userDetsils.userId,
+        newPassword: passwordData.confirmPassword,
+        oldPassword: passwordData.currentPassword,
+      });
+      setMessage({
+        type: "success",
+        text: "Password changed successfully! You can now use your new password to log in.",
+      });
+
+      // Reset form
+      setPasswordData({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+      setPasswordStrength({
+        length: false,
+        uppercase: false,
+        lowercase: false,
+        number: false,
+        special: false,
+      });
+      setErrors({});
+    } catch (error) {
+      setMessage({
+        type: "error",
+        text:
+          error.response?.data?.message ||
+          "Failed to change password. Please try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const renderStep = () => {
-    switch (step) {
-      case 1:
-        return (
-          <div className="step-content">
-            <div className="step-icon">
-              <FontAwesomeIcon icon={faLock} />
-            </div>
-            <h3>Verify Your Identity</h3>
-            <p>Enter your current password to continue</p>
+  const PasswordStrengthIndicator = () => {
+    const score = calculatePasswordStrengthScore();
+    const color = getStrengthColor(score);
 
-            <div className="input-field">
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Current Password"
-                value={formData.current}
-                onChange={(e) =>
-                  setFormData({ ...formData, current: e.target.value })
-                }
-              />
-              <button
-                type="button"
-                className="toggle-visibility"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-              </button>
-            </div>
-          </div>
-        );
-
-      case 2:
-        return (
-          <div className="step-content">
-            <div className="step-icon">
-              <FontAwesomeIcon icon={faShieldCheck} />
-            </div>
-            <h3>Create New Password</h3>
-            <p>Choose a strong password to secure your account</p>
-
-            <div className="input-field">
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="New Password"
-                value={formData.new}
-                onChange={(e) => {
-                  setFormData({ ...formData, new: e.target.value });
-                  setPasswordStrength(calculateStrength(e.target.value));
-                }}
-              />
-              <button
-                type="button"
-                className="toggle-visibility"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-              </button>
-            </div>
-
-            <div className="strength-indicator">
-              <div className="strength-label">
-                <span>Password Strength:</span>
-                <span
-                  className={`strength-value strength-${Math.floor(passwordStrength / 25)}`}
-                >
-                  {passwordStrength < 50
-                    ? "Weak"
-                    : passwordStrength < 75
-                      ? "Fair"
-                      : "Strong"}
-                </span>
-              </div>
-              <div className="strength-meter">
-                <div
-                  className={`strength-segment ${passwordStrength >= 25 ? "active" : ""}`}
-                ></div>
-                <div
-                  className={`strength-segment ${passwordStrength >= 50 ? "active" : ""}`}
-                ></div>
-                <div
-                  className={`strength-segment ${passwordStrength >= 75 ? "active" : ""}`}
-                ></div>
-                <div
-                  className={`strength-segment ${passwordStrength === 100 ? "active" : ""}`}
-                ></div>
-              </div>
-            </div>
-          </div>
-        );
-
-      case 3:
-        return (
-          <div className="step-content">
-            <div className="step-icon">
-              <FontAwesomeIcon icon={faCheckCircle} />
-            </div>
-            <h3>Confirm Password</h3>
-            <p>Re-enter your new password to confirm</p>
-
-            <div className="input-field">
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Confirm New Password"
-                value={formData.confirm}
-                onChange={(e) =>
-                  setFormData({ ...formData, confirm: e.target.value })
-                }
-              />
-              <button
-                type="button"
-                className="toggle-visibility"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-              </button>
-            </div>
-
-            {formData.confirm && formData.new === formData.confirm && (
-              <div className="match-indicator">
-                <FontAwesomeIcon icon={faCheckCircle} />
-                <span>Passwords match!</span>
-              </div>
-            )}
-          </div>
-        );
-
-      default:
-        return null;
-    }
-  };
-
-  return (
-    <div className="step-overlay" onClick={onClose}>
-      <div className="step-popup" onClick={(e) => e.stopPropagation()}>
-        <div className="popup-header">
-          <h2>Change Password</h2>
-          <button className="close-step" onClick={onClose}>
-            ×
-          </button>
+    return (
+      <div className="password-strength">
+        <div className="strength-header">
+          <span className="strength-label">Password Strength</span>
+          <span className="strength-score" style={{ color }}>
+            {score}%
+          </span>
         </div>
-
-        <div className="progress-steps">
-          {steps.map((s) => (
-            <div
-              key={s.number}
-              className={`step ${step >= s.number ? "active" : ""}`}
-            >
-              <div className="step-number">{s.number}</div>
-              <div className="step-info">
-                <div className="step-title">{s.title}</div>
-                <div className="step-description">{s.description}</div>
-              </div>
-              {s.number < 3 && <div className="step-connector"></div>}
+        <div className="strength-bar">
+          <div
+            className="strength-fill"
+            style={{
+              width: `${score}%`,
+              backgroundColor: color,
+            }}
+          />
+        </div>
+        <div className="strength-criteria">
+          {Object.entries(passwordStrength).map(([key, value]) => (
+            <div key={key} className="criterion">
+              <span className={`criterion-icon ${value ? "passed" : ""}`}>
+                {value ? <FiCheck /> : "•"}
+              </span>
+              <span className="criterion-text">
+                {key === "length" && "At least 8 characters"}
+                {key === "uppercase" && "Uppercase letter"}
+                {key === "lowercase" && "Lowercase letter"}
+                {key === "number" && "Contains number"}
+                {key === "special" && "Special character"}
+              </span>
             </div>
           ))}
         </div>
-
-        {renderStep()}
-
-        <div className="step-actions">
-          {step > 1 && (
-            <button className="btn-back" onClick={handleBack}>
-              Back
-            </button>
-          )}
-          <button className="btn-next" onClick={handleNext}>
-            {step === 3 ? "Update Password" : "Continue"}
-            <FontAwesomeIcon icon={faArrowRight} />
-          </button>
-        </div>
       </div>
+    );
+  };
+
+  return (
+    <div className="dashboard-layout">
+      <Sidebar
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+      />
+      <main className="dashboard-main-content">
+        <Header activeTab={activeTab} />
+
+        <div className="change-password-wrapper">
+          <div className="change-password-container">
+            {/* <div className="change-password-header">
+              <div className="header-icon">
+                <FiShield />
+              </div>
+              <div className="header-content">
+                <h1>Update Password</h1>
+                <p>Secure your account with a new password</p>
+              </div>
+            </div> */}
+
+            <div className="change-password-card">
+              <div className="card-decoration"></div>
+
+              <form onSubmit={handleSubmit} className="change-password-form">
+                {message.text && (
+                  <div className={`message-banner ${message.type}`}>
+                    <FiAlertCircle className="message-icon" />
+                    <span>{message.text}</span>
+                  </div>
+                )}
+
+                <div className="input-group">
+                  <div className="input-label">
+                    <FiLock />
+                    <span>Current Password</span>
+                  </div>
+                  <div className="input-wrapper">
+                    <input
+                      type={showCurrentPassword ? "text" : "password"}
+                      name="currentPassword"
+                      className={`password-input ${errors.currentPassword ? "error" : ""}`}
+                      value={passwordData.currentPassword}
+                      onChange={handlePasswordChange}
+                      placeholder="Enter your current password"
+                    />
+                    <button
+                      type="button"
+                      className="toggle-password"
+                      onClick={() =>
+                        setShowCurrentPassword(!showCurrentPassword)
+                      }
+                    >
+                      {showCurrentPassword ? <FiEyeOff /> : <FiEye />}
+                    </button>
+                  </div>
+                  {errors.currentPassword && (
+                    <div className="input-error">
+                      <FiAlertCircle />
+                      <span>{errors.currentPassword}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="input-group">
+                  <div className="input-label">
+                    <FiLock />
+                    <span>New Password</span>
+                  </div>
+                  <div className="input-wrapper">
+                    <input
+                      type={showNewPassword ? "text" : "password"}
+                      name="newPassword"
+                      className={`password-input ${errors.newPassword ? "error" : ""}`}
+                      value={passwordData.newPassword}
+                      onChange={handlePasswordChange}
+                      placeholder="Create a strong new password"
+                    />
+                    <button
+                      type="button"
+                      className="toggle-password"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                    >
+                      {showNewPassword ? <FiEyeOff /> : <FiEye />}
+                    </button>
+                  </div>
+                  {passwordData.newPassword && <PasswordStrengthIndicator />}
+                  {errors.newPassword && (
+                    <div className="input-error">
+                      <FiAlertCircle />
+                      <span>{errors.newPassword}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="input-group">
+                  <div className="input-label">
+                    <FiLock />
+                    <span>Confirm New Password</span>
+                  </div>
+                  <div className="input-wrapper">
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      name="confirmPassword"
+                      className={`password-input ${errors.confirmPassword ? "error" : ""}`}
+                      value={passwordData.confirmPassword}
+                      onChange={handlePasswordChange}
+                      placeholder="Re-enter your new password"
+                    />
+                    <button
+                      type="button"
+                      className="toggle-password"
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+                    >
+                      {showConfirmPassword ? <FiEyeOff /> : <FiEye />}
+                    </button>
+                  </div>
+                  {errors.confirmPassword && (
+                    <div className="input-error">
+                      <FiAlertCircle />
+                      <span>{errors.confirmPassword}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="security-tips">
+                  <h3>
+                    <FiShield />
+                    Security Recommendations
+                  </h3>
+                  <ul>
+                    <li>Use a unique password for this account</li>
+                    <li>Don't use personal information like birthdays</li>
+                    <li>Consider using a password manager</li>
+                    <li>Change your password every 90 days</li>
+                  </ul>
+                </div>
+
+                <div className="form-actions">
+                  <button
+                    type="submit"
+                    className="submit-button"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <span className="spinner"></span>
+                        Updating Password...
+                      </>
+                    ) : (
+                      "Update Password"
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   );
 };
 
-export default ChangePasswordPopup;
+export default ChangePassword;

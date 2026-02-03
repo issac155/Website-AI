@@ -1,6 +1,8 @@
-export const getDashboard = async (credentials) => {
+import api from "../config/api";
+
+export const getDashboard = async () => {
   try {
-    const response = await api.get("api/last-contacts", credentials);
+    const response = await api.get("api/contacts-dashboard");
 
     // Check for successful response
     if (response.status >= 200 && response.status < 300) {

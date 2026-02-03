@@ -105,10 +105,13 @@ export const deleteContact = async (contactId) => {
     }
   }
 };
-export const updateContactStatus = async (contactId) => {
+export const updateContactStatus = async (contactId, data) => {
   // Accept just the ID
   try {
-    const response = await api.delete(`api/delete-contact/${contactId}`); // Use DELETE method
+    const response = await api.put(
+      `api/contact-read-status/${contactId}`,
+      data,
+    ); // Use DELETE method
 
     // Check for successful response
     if (response.status >= 200 && response.status < 300) {

@@ -22,6 +22,7 @@ import ContactUs from "./ContactUs";
 import ContactView from "./ContactView";
 import Sidebar from "../components/layout/Sidebar";
 import Header from "../components/layout/Header";
+import { getDashboard } from "../../services/dashboardservice";
 
 const ShimmerLoader = ({ count = 5 }) => {
   return (
@@ -63,25 +64,18 @@ const DashboardHome = () => {
       setLoading(true);
       setError(null);
 
-      // Replace with your actual credentials
-      const credentials = {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      };
+      const response = await getDashboard();
+      const data = response.data; // Access the nested data object
 
-      const data = "";
       setDashboardData(data);
 
-      // Extract and format stats from the data await getDashboard(credentials)
-      if (data) {
-        // Assuming the API returns data in a format we can use
-        // Adjust these based on your actual API response structure
+      // Extract and format stats from the data
+      if (data && data.stats) {
         setStats({
-          totalContacts: data.totalContacts || 0,
-          newToday: data.newToday || 0,
-          responseRate: data.responseRate || 0,
-          pending: data.pending || 0,
+          totalContacts: data.stats.totalContacts || 0,
+          newToday: data.stats.todayContacts || 0, // Changed from newToday to todayContacts
+          responseRate: data.stats.responseRate || 0,
+          pending: data.stats.pendingCount || 0, // Changed from pending to pendingCount
         });
       }
     } catch (err) {
@@ -130,7 +124,7 @@ const DashboardHome = () => {
         <div className="dashboard-stat-card green">
           <div className="dashboard-stat-content">
             <h3>{loading ? "..." : `${stats.responseRate}%`}</h3>
-            <p>Response Rate</p>
+            <p>Response </p>
           </div>
           <FontAwesomeIcon icon={faChartBar} className="dashboard-stat-icon" />
         </div>
@@ -149,7 +143,7 @@ const DashboardHome = () => {
           <h3>Recent Contact Requests</h3>
           <button
             className="dashboard-view-all"
-            onClick={() => navigate("/dashboard/contacts")} // Fixed: use navigate function
+            onClick={() => navigate("/contacts")} // Fixed: use navigate function
           >
             View All
           </button>
@@ -164,8 +158,8 @@ const DashboardHome = () => {
             </button>
           </div>
         ) : dashboardData &&
-          dashboardData.recentContacts &&
-          dashboardData.recentContacts.length > 0 ? (
+          dashboardData.lastContacts && // Changed from recentContacts to lastContacts
+          dashboardData.lastContacts.length > 0 ? (
           <div className="contacts-table">
             <table>
               <thead>
@@ -174,34 +168,28 @@ const DashboardHome = () => {
                   <th>Email</th>
                   <th>Date</th>
                   <th>Status</th>
-                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
-                {dashboardData.recentContacts.map((contact) => (
-                  <tr key={contact.id}>
-                    <td>{contact.name || "N/A"}</td>
-                    <td>{contact.email || "N/A"}</td>
-                    <td>{formatDate(contact.createdAt)}</td>
-                    <td>
-                      <span
-                        className={`status-badge status-${contact.status || "pending"}`}
-                      >
-                        {contact.status || "Pending"}
-                      </span>
-                    </td>
-                    <td>
-                      <button
-                        className="view-details-btn"
-                        onClick={() =>
-                          navigate(`/dashboard/contacts/${contact.id}`)
-                        }
-                      >
-                        View
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {dashboardData.lastContacts.map(
+                  (
+                    contact, // Changed from recentContacts to lastContacts
+                  ) => (
+                    <tr key={contact.id}>
+                      <td>{contact.name || "N/A"}</td>
+                      <td>{contact.email || "N/A"}</td>
+                      <td>{formatDate(contact.created_at)}</td>{" "}
+                      {/* Changed from createdAt to created_at */}
+                      <td>
+                        <span
+                          className={`status-badge status-${contact.isRead === 1 ? "read" : "pending"}`}
+                        >
+                          {contact.isRead === 1 ? "Read" : "Pending"}
+                        </span>
+                      </td>
+                    </tr>
+                  ),
+                )}
               </tbody>
             </table>
           </div>
@@ -234,9 +222,6 @@ const Dashboard = () => {
         <div className="dashboard-content-area">
           <Routes>
             <Route path="/" element={<DashboardHome />} />
-            <Route path="/contacts" element={<ContactUs />} />
-            <Route path="/contacts/:id" element={<ContactView />} />
-            <Route path="*" element={<Navigate to="/dashboard" />} />
           </Routes>
         </div>
       </main>

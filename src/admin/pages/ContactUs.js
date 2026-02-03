@@ -13,7 +13,7 @@ import {
   faSpinner,
   faCheckCircle,
   faClock,
-  faExchangeAlt, // Added for status change
+  faExchangeAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import "../style/ContactUs.css";
@@ -24,7 +24,7 @@ import {
   deleteContact,
   getContact,
   updateContactStatus,
-} from "../../services/contactservice"; // Added updateContactStatus
+} from "../../services/contactservice";
 
 const ContactUs = () => {
   const [contacts, setContacts] = useState([]);
@@ -50,7 +50,7 @@ const ContactUs = () => {
   const [contactToDelete, setContactToDelete] = useState(null);
   const [deletingContactId, setDeletingContactId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [updatingContactId, setUpdatingContactId] = useState(null); // New state for tracking status update
+  const [updatingContactId, setUpdatingContactId] = useState(null);
 
   // Fetch contacts from API
   const fetchContacts = async (params = {}) => {
@@ -136,24 +136,27 @@ const ContactUs = () => {
     }
   };
 
-  // Toggle contact status (Pending ↔ Responded)
+  // Toggle contact status
+  // Toggle contact status
   const handleToggleStatus = async (contact) => {
     const contactId = contact.id || contact._id;
     const currentStatus = parseInt(contact.isRead) || 0;
     const newStatus = currentStatus === 0 ? 1 : 0;
 
-    // Set updating state
     setUpdatingContactId(contactId);
 
     try {
-      // Call API to update status
-      const response = await updateContactStatus(contactId, {
-        isRead: newStatus,
-      });
+      const data = { isRead: newStatus };
 
-      if (response && response.success) {
-        // Update local state
-        const updatedContact = { ...contact, isRead: newStatus };
+      const response = await updateContactStatus(contactId, data);
+
+      if (response && response.status === 200 && response.data) {
+        // Update the contact with the response data
+        const updatedContact = {
+          ...contact,
+          isRead: response.data.isRead,
+          id: response.data.id || contactId,
+        };
 
         setContacts(
           contacts.map((c) =>
@@ -167,7 +170,6 @@ const ContactUs = () => {
           ),
         );
 
-        // If viewing the contact in popup, update it
         if (
           selectedContact &&
           (selectedContact.id || selectedContact._id) === contactId
@@ -176,16 +178,41 @@ const ContactUs = () => {
         }
 
         console.log(
-          `Status updated to ${newStatus === 0 ? "Pending" : "Responded"}`,
+          `Status updated to ${response.data.isRead === 0 ? "Pending" : "Responded"}`,
         );
       } else {
-        throw new Error("Failed to update status");
+        // Fallback: Update with expected status if response format differs
+        const fallbackUpdatedContact = { ...contact, isRead: newStatus };
+
+        setContacts(
+          contacts.map((c) =>
+            (c.id || c._id) === contactId ? fallbackUpdatedContact : c,
+          ),
+        );
+
+        setFilteredContacts(
+          filteredContacts.map((c) =>
+            (c.id || c._id) === contactId ? fallbackUpdatedContact : c,
+          ),
+        );
+
+        if (
+          selectedContact &&
+          (selectedContact.id || selectedContact._id) === contactId
+        ) {
+          setSelectedContact(fallbackUpdatedContact);
+        }
+
+        console.log(
+          `Status updated to ${newStatus === 0 ? "Pending" : "Responded"}`,
+        );
       }
     } catch (error) {
       console.error("Error updating contact status:", error);
-      alert("Failed to update contact status");
+
+      // Show error message to user
+      alert("Failed to update contact status. Please try again.");
     } finally {
-      // Reset updating state
       setUpdatingContactId(null);
     }
   };
@@ -235,15 +262,20 @@ const ContactUs = () => {
   };
 
   const handleUpdateContact = (updatedContact) => {
+    const updatedContactId = updatedContact.id || updatedContact._id;
+
     setContacts(
-      contacts.map((contact) =>
-        contact.id === updatedContact.id ? updatedContact : contact,
-      ),
+      contacts.map((contact) => {
+        const contactId = contact.id || contact._id;
+        return contactId === updatedContactId ? updatedContact : contact;
+      }),
     );
+
     setFilteredContacts(
-      filteredContacts.map((contact) =>
-        contact.id === updatedContact.id ? updatedContact : contact,
-      ),
+      filteredContacts.map((contact) => {
+        const contactId = contact.id || contact._id;
+        return contactId === updatedContactId ? updatedContact : contact;
+      }),
     );
   };
 
@@ -258,14 +290,12 @@ const ContactUs = () => {
 
     const contactId = contactToDelete.id || contactToDelete._id;
 
-    // Set deleting states
     setIsDeleting(true);
     setDeletingContactId(contactId);
 
     try {
       const response = await deleteContact(contactId);
 
-      // Update local state
       setContacts(
         contacts.filter((contact) => (contact.id || contact._id) !== contactId),
       );
@@ -280,7 +310,6 @@ const ContactUs = () => {
       console.error("Error deleting contact:", error);
       alert("Failed to delete contact");
     } finally {
-      // Reset deleting states
       setIsDeleting(false);
       setDeletingContactId(null);
       setContactToDelete(null);
@@ -317,6 +346,16 @@ const ContactUs = () => {
       </span>
     );
   };
+
+  // Loader Component
+  const Loader = () => (
+    <div className="contact-loader-container">
+      <div className="contact-loader">
+        <FontAwesomeIcon icon={faSpinner} className="fa-spin" />
+        <p>Loading contacts...</p>
+      </div>
+    </div>
+  );
 
   return (
     <div className="dashboard-layout">
@@ -365,8 +404,9 @@ const ContactUs = () => {
             </div>
           </div>
 
-          {loading && contacts.length === 0 ? (
-            <div className="loading">Loading contacts...</div>
+          {/* Show loader when loading */}
+          {loading ? (
+            <Loader />
           ) : (
             <>
               <div className="contacts-table-container">
@@ -529,7 +569,7 @@ const ContactUs = () => {
           contact={selectedContact}
           onClose={handleClosePopup}
           onUpdateContact={handleUpdateContact}
-          onToggleStatus={() => handleToggleStatus(selectedContact)} // Pass toggle function to popup
+          onToggleStatus={() => handleToggleStatus(selectedContact)}
         />
       )}
 

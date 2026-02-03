@@ -9,6 +9,7 @@ import {
   faChartBar,
   faCog,
   faSignOutAlt,
+  faKey, // Add this icon
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import "../../style/Sidebar.css";
@@ -25,13 +26,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab }) => {
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: faHome },
     { id: "contacts", label: "Contact Us", icon: faEnvelope },
-    // { id: "users", label: "Users", icon: faUsers },
-    // { id: "analytics", label: "Analytics", icon: faChartBar },
-    // { id: "settings", label: "Settings", icon: faCog },
+    { id: "change-password", label: "Change Password", icon: faKey }, // New item
   ];
 
   return (
-    <aside className={`sidebar  "open" `}>
+    <aside className={`sidebar "open"`}>
       <div className="sidebar-header">
         <div className="sidebar-logo">
           <div className="sidebar-logo-icon">ES</div>
@@ -40,12 +39,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab }) => {
             <p>Solutions Admin</p>
           </div>
         </div>
-        {/* <button
-          className="sidebar-toggle"
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-        >
-          <FontAwesomeIcon icon={sidebarOpen ? faTimes : faBars} />
-        </button> */}
       </div>
 
       <nav className="sidebar-nav">
@@ -57,6 +50,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab }) => {
               setActiveTab(item.id);
               if (item.id === "contacts") {
                 navigate("/contacts");
+              } else if (item.id === "change-password") {
+                navigate("/change-password"); // New navigation
               } else {
                 navigate("/dashboard");
               }
