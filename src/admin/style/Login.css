@@ -59,11 +59,9 @@
 /* Main Card */
 .login-card {
   display: flex;
-  max-width: 1200px;
-  width: 100%;
-  max-height: 90vh; /* Limit maximum height */
+  width: 80%;
+  height: 90%;
   height: auto;
-  min-height: 700px;
   background: white;
   border-radius: 24px;
   overflow: hidden;
@@ -86,7 +84,6 @@
   align-items: center;
   position: relative;
   overflow: hidden;
-  max-height: 90vh;
 }
 
 .admin-info-section::before {
@@ -606,7 +603,7 @@
 
   .admin-info-section,
   .login-form-section {
-    padding: 40px;
+    padding: 20px;
   }
 }
 

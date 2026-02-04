@@ -20,6 +20,7 @@ import DashboardHome from "./admin/pages/DashboardHome";
 import ContactUs from "./admin/pages/ContactUs";
 import ContactView from "./admin/pages/ContactView";
 import ChangePassword from "./admin/pages/ChangePassword";
+import ProtectedRoute from "./ProtectedRoute";
 
 function App() {
   return (
@@ -34,7 +35,6 @@ function App() {
             </WebLayout>
           }
         />
-
         <Route
           path="/about"
           element={
@@ -43,7 +43,6 @@ function App() {
             </WebLayout>
           }
         />
-
         <Route
           path="/services"
           element={
@@ -52,7 +51,6 @@ function App() {
             </WebLayout>
           }
         />
-
         <Route
           path="/projects"
           element={
@@ -61,7 +59,6 @@ function App() {
             </WebLayout>
           }
         />
-
         <Route
           path="/partners"
           element={
@@ -70,7 +67,6 @@ function App() {
             </WebLayout>
           }
         />
-
         <Route
           path="/contact"
           element={
@@ -79,7 +75,6 @@ function App() {
             </WebLayout>
           }
         />
-
         <Route
           path="/company-overview"
           element={
@@ -88,7 +83,6 @@ function App() {
             </WebLayout>
           }
         />
-
         <Route
           path="/engineering-approach"
           element={
@@ -97,7 +91,6 @@ function App() {
             </WebLayout>
           }
         />
-
         <Route
           path="/facility-management"
           element={
@@ -106,7 +99,6 @@ function App() {
             </WebLayout>
           }
         />
-
         <Route
           path="/lighting-solar-solutions"
           element={
@@ -115,12 +107,32 @@ function App() {
             </WebLayout>
           }
         />
-
         {/* 🔐 ADMIN PANEL (NO HEADER / FOOTER) DashboardHome*/}
         <Route path="/admin" element={<LoginPage />} />
-        <Route path="/dashboard" element={<DashboardHome />} />
-        <Route path="/contacts" element={<ContactUs />} />
-        <Route path="/change-password" element={<ChangePassword />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardHome />
+            </ProtectedRoute>
+          }
+        />{" "}
+        <Route
+          path="/contacts"
+          element={
+            <ProtectedRoute>
+              <ContactUs />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/change-password"
+          element={
+            <ProtectedRoute>
+              <ChangePassword />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   );

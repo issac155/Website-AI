@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEyeSlash,
@@ -18,6 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import "../style/Login.css";
 import { login } from "../../services/authservice";
+import { getUserDetails } from "../../utils/localStorageKeys";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -33,7 +34,12 @@ const Login = () => {
     username: "",
     password: "",
   });
-
+  useEffect(() => {
+    const isLoggedIn = getUserDetails();
+    if (isLoggedIn) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [navigate]);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -82,7 +88,7 @@ const Login = () => {
     if (Object.keys(newErrors).length === 0) {
       try {
         setLoading(true);
-
+        console.log(formData.username, formData.password);
         // Call the login API with username
         const response = await login({
           username: formData.username,
@@ -98,7 +104,7 @@ const Login = () => {
         // localStorage.setItem('user', JSON.stringify(response.user));
 
         // Redirect to dashboard
-        navigate("/dashboard");
+        navigate("/dashboard", { replace: true });
       } catch (error) {
         console.error("Login error:", error);
 
@@ -181,7 +187,7 @@ const Login = () => {
               </div>
             </div>
 
-            <div className="admin-tips">
+            {/* <div className="admin-tips">
               <h4>Contact Us – Admin Tips:</h4>
               <ul>
                 <li>Check new contact messages daily</li>
@@ -189,7 +195,7 @@ const Login = () => {
                 <li>Mark resolved messages to avoid duplicates</li>
                 <li>Escalate critical issues to the support team</li>
               </ul>
-            </div>
+            </div> */}
           </div>
         </div>
 

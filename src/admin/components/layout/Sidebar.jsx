@@ -1,36 +1,41 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faBars,
-  faTimes,
   faHome,
   faEnvelope,
-  faUsers,
-  faChartBar,
-  faCog,
   faSignOutAlt,
-  faKey, // Add this icon
+  faKey,
 } from "@fortawesome/free-solid-svg-icons";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "../../style/Sidebar.css";
 
-const Sidebar = ({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab }) => {
+const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("user");
-    navigate("/login");
+    localStorage.clear();
+    navigate("/admin", { replace: true });
   };
 
   const menuItems = [
-    { id: "dashboard", label: "Dashboard", icon: faHome },
-    { id: "contacts", label: "Contact Us", icon: faEnvelope },
-    { id: "change-password", label: "Change Password", icon: faKey }, // New item
+    { id: "dashboard", label: "Dashboard", icon: faHome, path: "/dashboard" },
+    {
+      id: "contacts",
+      label: "Contact Us",
+      icon: faEnvelope,
+      path: "/contacts",
+    },
+    {
+      id: "change-password",
+      label: "Change Password",
+      icon: faKey,
+      path: "/change-password",
+    },
   ];
 
   return (
-    <aside className={`sidebar "open"`}>
+    <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
       <div className="sidebar-header">
         <div className="sidebar-logo">
           <div className="sidebar-logo-icon">ES</div>
@@ -45,17 +50,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab }) => {
         {menuItems.map((item) => (
           <button
             key={item.id}
-            className={`sidebar-nav-item ${activeTab === item.id ? "active" : ""}`}
-            onClick={() => {
-              setActiveTab(item.id);
-              if (item.id === "contacts") {
-                navigate("/contacts");
-              } else if (item.id === "change-password") {
-                navigate("/change-password"); // New navigation
-              } else {
-                navigate("/dashboard");
-              }
-            }}
+            className={`sidebar-nav-item ${
+              location.pathname === item.path ? "active" : ""
+            }`}
+            onClick={() => navigate(item.path)}
           >
             <FontAwesomeIcon icon={item.icon} className="sidebar-nav-icon" />
             <span className="sidebar-nav-label">{item.label}</span>

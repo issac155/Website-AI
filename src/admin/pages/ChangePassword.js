@@ -14,9 +14,11 @@ import Sidebar from "../components/layout/Sidebar";
 import Header from "../components/layout/Header";
 import { getUserDetails } from "../../utils/localStorageKeys";
 import { changepassword } from "../../services/authservice";
+import { useNavigate } from "react-router-dom";
 const ChangePassword = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("contact");
+  const navigate = useNavigate();
 
   // Password state
   const [passwordData, setPasswordData] = useState({
@@ -150,6 +152,8 @@ const ChangePassword = () => {
         number: false,
         special: false,
       });
+      localStorage.clear();
+      navigate("/admin", { replace: true });
       setErrors({});
     } catch (error) {
       setMessage({
