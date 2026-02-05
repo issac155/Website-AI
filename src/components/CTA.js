@@ -12,8 +12,8 @@ const CTA = () => {
           </p>
 
           <div className="cta-buttons">
-            <a href="tel:+96898092795" className="cta-button cta-primary">
-              <i className="fas fa-phone-alt"></i> Call +96898092795
+            <a href="tel:+968 91462084" className="cta-button cta-primary">
+              <i className="fas fa-phone-alt"></i> Call +968 91462084
             </a>
             <a
               href="mailto:Vignesh.potti@almawaridoman.com"

@@ -14,11 +14,9 @@ import Sidebar from "../components/layout/Sidebar";
 import Header from "../components/layout/Header";
 import { getUserDetails } from "../../utils/localStorageKeys";
 import { changepassword } from "../../services/authservice";
-import { useNavigate } from "react-router-dom";
 const ChangePassword = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("contact");
-  const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [activeTab, setActiveTab] = useState("change-password");
 
   // Password state
   const [passwordData, setPasswordData] = useState({
@@ -152,8 +150,6 @@ const ChangePassword = () => {
         number: false,
         special: false,
       });
-      localStorage.clear();
-      navigate("/admin", { replace: true });
       setErrors({});
     } catch (error) {
       setMessage({
@@ -216,7 +212,11 @@ const ChangePassword = () => {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
       />
-      <main className="dashboard-main-content">
+      <main
+        className={`dashboard-main-content ${
+          sidebarOpen ? "sidebar-open" : "sidebar-closed"
+        }`}
+      >
         <Header activeTab={activeTab} />
 
         <div className="change-password-wrapper">
@@ -263,7 +263,7 @@ const ChangePassword = () => {
                         setShowCurrentPassword(!showCurrentPassword)
                       }
                     >
-                      {showCurrentPassword ? <FiEyeOff /> : <FiEye />}
+                      {showCurrentPassword ? <FiEye /> : <FiEyeOff />}
                     </button>
                   </div>
                   {errors.currentPassword && (
@@ -293,7 +293,7 @@ const ChangePassword = () => {
                       className="toggle-password"
                       onClick={() => setShowNewPassword(!showNewPassword)}
                     >
-                      {showNewPassword ? <FiEyeOff /> : <FiEye />}
+                      {showNewPassword ? <FiEye /> : <FiEyeOff />}
                     </button>
                   </div>
                   {passwordData.newPassword && <PasswordStrengthIndicator />}
@@ -326,7 +326,7 @@ const ChangePassword = () => {
                         setShowConfirmPassword(!showConfirmPassword)
                       }
                     >
-                      {showConfirmPassword ? <FiEyeOff /> : <FiEye />}
+                      {showConfirmPassword ? <FiEye /> : <FiEyeOff />}
                     </button>
                   </div>
                   {errors.confirmPassword && (

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Companylogo from "../../Images/LOGO.png";
 import {
   faEyeSlash,
   faEye,
@@ -141,14 +142,12 @@ const Login = () => {
           <div className="admin-content">
             <div className="admin-header">
               <div className="admin-logo">
-                <div className="logo-icon">
-                  <FontAwesomeIcon icon={faBuilding} />
-                </div>
-                <div className="logo-text">
-                  <h1>
-                    Engineering<span>Solutions</span>
-                  </h1>
-                  <p className="admin-subtitle">Administration Portal</p>
+                <div className="logo-icon-login">
+                  <img
+                    src={Companylogo}
+                    alt="Company Logo"
+                    className="logo-img"
+                  />
                 </div>
               </div>
             </div>
@@ -176,7 +175,7 @@ const Login = () => {
                 </div>
               </div>
 
-              <div className="admin-feature">
+              {/* <div className="admin-feature">
                 <div className="feature-icon-wrapper">
                   <FontAwesomeIcon icon={faEnvelope} />
                 </div>
@@ -184,7 +183,7 @@ const Login = () => {
                   <h4>Contact Us</h4>
                   <p>View and manage customer contact messages</p>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             {/* <div className="admin-tips">
@@ -228,6 +227,7 @@ const Login = () => {
                     onBlur={() => handleBlur("username")}
                     className={errors.username ? "error" : ""}
                     placeholder="Enter your username"
+                    autoFocus
                   />
                   <div className="input-underline"></div>
                 </div>
