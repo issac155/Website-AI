@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "../styles/PageStyles.css";
+import "../../web/styles/PageStyles.css";
 
 const EngineeringApproach = () => {
   const approaches = [

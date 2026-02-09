@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "../styles/PageStyles.css";
+import "../../web/styles/PageStyles.css";
 import {
   FaMapMarkerAlt,
   FaPhoneAlt,
@@ -7,7 +7,7 @@ import {
   FaClock,
   FaPaperPlane,
 } from "react-icons/fa";
-import { saveContact } from "../services/contactservice";
+import { saveContact } from "../../services/contactservice";
 
 const Contact = () => {
   const [error, setError] = useState("");
@@ -52,6 +52,7 @@ const Contact = () => {
       !formData.name ||
       !formData.email ||
       !formData.phone ||
+      !formData.service || // 👈 add this
       !formData.message
     ) {
       setError("Please fill in all required fields (*)");
@@ -256,21 +257,31 @@ const Contact = () => {
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="service">Service Interested In</label>
+                    <label htmlFor="service">Service Interested In *</label>
                     <select
                       id="service"
                       name="service"
                       value={formData.service}
                       onChange={handleChange}
                       disabled={loading}
+                      required // 👈 add this
                     >
                       <option value="">Select a service</option>
-                      <option value="mep">MEP Engineering</option>
-                      <option value="facility">Facility Management</option>
-                      <option value="elv">ELV System Integration</option>
-                      <option value="lighting">Lighting Solutions</option>
-                      <option value="solar">Solar Solutions</option>
-                      <option value="project">Project Management</option>
+                      <option value="MEP Engineering">MEP Engineering</option>
+                      <option value="Facility Management">
+                        Facility Management
+                      </option>
+                      <option value="ELV System Integration">
+                        ELV System Integration
+                      </option>
+                      <option value="Lighting Solution">
+                        Lighting Solutions
+                      </option>
+                      <option value="Solar Solutions">Solar Solutions</option>
+                      <option value="Project Management">
+                        Project Management
+                      </option>
+                      <option value="Other Service">Other Service</option>
                     </select>
                   </div>
                 </div>

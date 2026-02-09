@@ -1193,7 +1193,7 @@
 .form-group select:focus,
 .form-group textarea:focus,
 .cta-button:focus {
-  outline: 2px solid var(--accent-gold);
+  /* outline: 2px solid var(--accent-gold); */
   outline-offset: 2px;
 }
 
@@ -2162,15 +2162,14 @@
   }
 }
 
-::-webkit-scrollbar {
+/* ::-webkit-scrollbar {
   width: 7px !important;
-  /* height: 4px !important; */
 }
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(-225deg, #bf8334 0%, #39a469 100%) !important;
 
   border-radius: 10px !important;
-}
+} */
 
 ::-webkit-input-placeholder {
   color: #999 !important;
@@ -2266,7 +2265,11 @@
 }
 
 .logo-text {
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
   font-weight: 800;
   font-size: 18px;
   fill: currentColor;
@@ -2528,7 +2531,9 @@
 .animate-on-scroll {
   opacity: 0;
   transform: translateY(30px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s ease;
 }
 
 .animate-on-scroll.animated {

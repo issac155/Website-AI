@@ -4,19 +4,12 @@ import Companylogo from "../../Images/LOGO.png";
 import {
   faEyeSlash,
   faEye,
-  faEnvelope,
   faLock,
   faUser,
   faArrowRight,
   faChartLine,
-  faUsersCog,
-  faBuilding,
-  faShieldAlt,
-  faCogs,
-  faDatabase,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
 import "../style/Login.css";
 import { login } from "../../services/authservice";
 import { getUserDetails } from "../../utils/localStorageKeys";
@@ -26,10 +19,6 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
-  const [isFocused, setIsFocused] = useState({
-    username: false,
-    password: false,
-  });
 
   const [formData, setFormData] = useState({
     username: "",
@@ -50,14 +39,6 @@ const Login = () => {
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
-  };
-
-  const handleFocus = (field) => {
-    setIsFocused((prev) => ({ ...prev, [field]: true }));
-  };
-
-  const handleBlur = (field) => {
-    setIsFocused((prev) => ({ ...prev, [field]: false }));
   };
 
   const togglePasswordVisibility = () => {
@@ -223,8 +204,6 @@ const Login = () => {
                     value={formData.username}
                     onChange={handleInputChange}
                     onKeyDown={handleKeyPressEnter}
-                    onFocus={() => handleFocus("username")}
-                    onBlur={() => handleBlur("username")}
                     className={errors.username ? "error" : ""}
                     placeholder="Enter your username"
                     autoFocus
@@ -247,8 +226,6 @@ const Login = () => {
                     value={formData.password}
                     onChange={handleInputChange}
                     onKeyDown={handleKeyPressEnter}
-                    onFocus={() => handleFocus("password")}
-                    onBlur={() => handleBlur("password")}
                     className={errors.password ? "error" : ""}
                     placeholder="••••••••"
                   />

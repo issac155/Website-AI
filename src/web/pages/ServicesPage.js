@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "../styles/PageStyles.css";
+import "../../web/styles/PageStyles.css";
 import {
   FaTools,
   FaBuilding,
@@ -18,7 +18,7 @@ import {
   FaCertificate,
   FaFileDownload,
 } from "react-icons/fa";
-import logoser from "../Images/Logo1.png";
+import logoser from "../../Images/Logo1.png";
 
 const ServicesPage = () => {
   const services = [

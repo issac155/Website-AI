@@ -1,37 +1,22 @@
 // ContactViewPopup.js
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faArrowLeft,
   faEnvelope,
   faPhone,
   faBuilding,
   faCalendar,
-  faEdit,
-  faTrash,
-  faReply,
-  faPrint,
   faDownload,
   faPaperclip,
   faTimes,
-  faEye,
-  faEyeSlash,
 } from "@fortawesome/free-solid-svg-icons";
 import "../style/ContactView.css";
 
 const ContactViewPopup = ({ contact, onClose, onUpdateContact }) => {
   const [replyText, setReplyText] = useState("");
-  const [notes, setNotes] = useState("");
   const [showReplyForm, setShowReplyForm] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedContact, setEditedContact] = useState(null);
 
   // Initialize editedContact when contact changes
-  useEffect(() => {
-    if (contact) {
-      setEditedContact({ ...contact });
-    }
-  }, [contact]);
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -52,33 +37,6 @@ const ContactViewPopup = ({ contact, onClose, onUpdateContact }) => {
     }
   };
 
-  const getStatusBadge = (status) => {
-    const statusConfig = {
-      0: { label: "Pending", class: "pending", color: "#f97316" },
-      1: { label: "Responded", class: "responded", color: "#10b981" },
-      pending: { label: "Pending", class: "pending", color: "#f97316" },
-      responded: { label: "Responded", class: "responded", color: "#10b981" },
-      true: { label: "Responded", class: "responded", color: "#10b981" },
-      false: { label: "Pending", class: "pending", color: "#f97316" },
-    };
-
-    const statusValue = status?.toString();
-    const config = statusConfig[statusValue] || {
-      label: "Unknown",
-      class: "unknown",
-      color: "#6b7280",
-    };
-
-    return (
-      <span
-        className={`contactview-status-badge ${config.class}`}
-        style={{ backgroundColor: config.color }}
-      >
-        {config.label}
-      </span>
-    );
-  };
-
   const handleReply = () => {
     if (replyText.trim()) {
       // In real app, send email API call here
@@ -97,63 +55,6 @@ const ContactViewPopup = ({ contact, onClose, onUpdateContact }) => {
         onUpdateContact(updatedContact);
       }
     }
-  };
-
-  const handleSaveNotes = () => {
-    if (notes.trim()) {
-      // In real app, save notes to API
-      alert("Notes saved successfully!");
-
-      const updatedContact = {
-        ...contact,
-        notes: notes,
-      };
-
-      if (onUpdateContact) {
-        onUpdateContact(updatedContact);
-      }
-    }
-  };
-
-  const handleDelete = () => {
-    if (window.confirm("Are you sure you want to delete this contact?")) {
-      // In real app, delete API call
-      alert("Contact deleted!");
-      onClose();
-    }
-  };
-
-  const handleStatusChange = (newStatus) => {
-    const updatedContact = {
-      ...contact,
-      isRead: newStatus,
-    };
-
-    if (onUpdateContact) {
-      onUpdateContact(updatedContact);
-    }
-  };
-
-  const handleSaveEdit = () => {
-    if (editedContact) {
-      if (onUpdateContact) {
-        onUpdateContact(editedContact);
-      }
-      setIsEditing(false);
-      alert("Contact updated successfully!");
-    }
-  };
-
-  const handleCancelEdit = () => {
-    setEditedContact({ ...contact });
-    setIsEditing(false);
-  };
-
-  const handleInputChange = (field, value) => {
-    setEditedContact((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
   };
 
   if (!contact) {
@@ -223,32 +124,10 @@ const ContactViewPopup = ({ contact, onClose, onUpdateContact }) => {
           {/* Contact Information */}
           <div className="contactview-info-section">
             <div className="contactview-header">
-              <h3>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    value={editedContact?.name || ""}
-                    onChange={(e) => handleInputChange("name", e.target.value)}
-                    className="contactview-edit-input"
-                  />
-                ) : (
-                  contact.name || "No Name"
-                )}
-              </h3>
+              <h3>{contact.name || "No Name"}</h3>
               {contact.company && (
                 <span className="contactview-company-badge">
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      value={editedContact?.company || ""}
-                      onChange={(e) =>
-                        handleInputChange("company", e.target.value)
-                      }
-                      className="contactview-edit-input company"
-                    />
-                  ) : (
-                    contact.company
-                  )}
+                  {contact.company}
                 </span>
               )}
             </div>
@@ -256,57 +135,16 @@ const ContactViewPopup = ({ contact, onClose, onUpdateContact }) => {
             <div className="contactview-details-grid">
               <div className="contactview-detail-item">
                 <FontAwesomeIcon icon={faEnvelope} />
-                <span>
-                  {isEditing ? (
-                    <input
-                      type="email"
-                      value={editedContact?.email || ""}
-                      onChange={(e) =>
-                        handleInputChange("email", e.target.value)
-                      }
-                      className="contactview-edit-input"
-                    />
-                  ) : (
-                    contact.email || "No Email"
-                  )}
-                </span>
+                <span>{contact.email || "No Email"}</span>
               </div>
               <div className="contactview-detail-item">
                 <FontAwesomeIcon icon={faPhone} />
-                <span>
-                  {isEditing ? (
-                    <input
-                      type="tel"
-                      value={
-                        editedContact?.phone || editedContact?.phoneNumber || ""
-                      }
-                      onChange={(e) =>
-                        handleInputChange("phone", e.target.value)
-                      }
-                      className="contactview-edit-input"
-                    />
-                  ) : (
-                    contact.phone || contact.phoneNumber || "N/A"
-                  )}
-                </span>
+                <span>{contact.phone || contact.phoneNumber || "N/A"}</span>
               </div>
               {contact.address && (
                 <div className="contactview-detail-item">
                   <FontAwesomeIcon icon={faBuilding} />
-                  <span>
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        value={editedContact?.address || ""}
-                        onChange={(e) =>
-                          handleInputChange("address", e.target.value)
-                        }
-                        className="contactview-edit-input"
-                      />
-                    ) : (
-                      contact.address
-                    )}
-                  </span>
+                  <span>{contact.address}</span>
                 </div>
               )}
               <div className="contactview-detail-item">
@@ -346,16 +184,7 @@ const ContactViewPopup = ({ contact, onClose, onUpdateContact }) => {
           <div className="contactview-message-section">
             <h4>Message</h4>
             <div className="contactview-message-content">
-              {isEditing ? (
-                <textarea
-                  value={editedContact?.message || ""}
-                  onChange={(e) => handleInputChange("message", e.target.value)}
-                  className="contactview-edit-textarea"
-                  rows={6}
-                />
-              ) : (
-                contact.message || "No message provided"
-              )}
+              {contact.message || "No message provided"}
             </div>
           </div>
 

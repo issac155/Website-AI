@@ -15,7 +15,6 @@ import {
   faClock,
   faExchangeAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import { useNavigate } from "react-router-dom";
 import "../style/ContactUs.css";
 import Sidebar from "../components/layout/Sidebar";
 import Header from "../components/layout/Header";
@@ -32,10 +31,9 @@ const ContactUs = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [sortBy, setSortBy] = useState("date");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalContacts, setTotalContacts] = useState(0);
+  const [totalContacts, setTotalContacts] = useState(0); // Uncomment this
   const [searchParams, setSearchParams] = useState({
     sRead: "",
     search: "",
@@ -43,7 +41,6 @@ const ContactUs = () => {
     limit: 10,
   });
 
-  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [selectedContact, setSelectedContact] = useState(null);
@@ -68,12 +65,17 @@ const ContactUs = () => {
       if (response && response.data) {
         setContacts(response.data);
         setFilteredContacts(response.data);
-        setTotalContacts(response.total || response.data.length);
-        setTotalPages(response.pages || 1);
+        setTotalContacts(response.pagination.total || response.data.length);
+        setTotalPages(response.pagination.total_pages || 1);
 
+        // FIXED: Use response.pagination.page instead of response.pagination.total_pages
+        const pageNum = response.pagination.page || params.page || 1;
+        setCurrentPage(pageNum);
         setSearchParams((prev) => ({
           ...prev,
-          page: response.page || 1,
+          page: pageNum,
+          search: params.search !== undefined ? params.search : prev.search,
+          sRead: params.sRead !== undefined ? params.sRead : prev.sRead,
         }));
       }
     } catch (error) {
@@ -96,7 +98,7 @@ const ContactUs = () => {
     fetchContacts({
       ...searchParams,
       search: term,
-      page: 1,
+      page: 1, // Reset to first page when searching
     });
   };
 
@@ -108,7 +110,7 @@ const ContactUs = () => {
       const params = {
         ...searchParams,
         sRead: status,
-        page: 1,
+        page: 1, // Reset to first page when filtering
       };
       fetchContacts(params);
     } else {
@@ -137,7 +139,6 @@ const ContactUs = () => {
   };
 
   // Toggle contact status
-  // Toggle contact status
   const handleToggleStatus = async (contact) => {
     const contactId = contact.id || contact._id;
     const currentStatus = parseInt(contact.isRead) || 0;
@@ -151,7 +152,6 @@ const ContactUs = () => {
       const response = await updateContactStatus(contactId, data);
 
       if (response && response.status === 200 && response.data) {
-        // Update the contact with the response data
         const updatedContact = {
           ...contact,
           isRead: response.data.isRead,
@@ -181,7 +181,6 @@ const ContactUs = () => {
           `Status updated to ${response.data.isRead === 0 ? "Pending" : "Responded"}`,
         );
       } else {
-        // Fallback: Update with expected status if response format differs
         const fallbackUpdatedContact = { ...contact, isRead: newStatus };
 
         setContacts(
@@ -209,29 +208,10 @@ const ContactUs = () => {
       }
     } catch (error) {
       console.error("Error updating contact status:", error);
-
-      // Show error message to user
       alert("Failed to update contact status. Please try again.");
     } finally {
       setUpdatingContactId(null);
     }
-  };
-
-  // Client-side sorting
-  const handleSort = (criteria) => {
-    setSortBy(criteria);
-
-    let sorted = [...filteredContacts];
-    if (criteria === "date") {
-      sorted.sort(
-        (a, b) =>
-          new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date),
-      );
-    } else if (criteria === "name") {
-      sorted.sort((a, b) => a.name.localeCompare(b.name));
-    }
-
-    setFilteredContacts(sorted);
   };
 
   // Pagination handlers
@@ -249,6 +229,15 @@ const ContactUs = () => {
       const prevPage = currentPage - 1;
       setCurrentPage(prevPage);
       const params = { ...searchParams, page: prevPage };
+      fetchContacts(params);
+    }
+  };
+
+  // Go to specific page
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages && page !== currentPage) {
+      setCurrentPage(page);
+      const params = { ...searchParams, page: page };
       fetchContacts(params);
     }
   };
@@ -294,16 +283,27 @@ const ContactUs = () => {
     setDeletingContactId(contactId);
 
     try {
-      const response = await deleteContact(contactId);
+      await deleteContact(contactId);
 
-      setContacts(
-        contacts.filter((contact) => (contact.id || contact._id) !== contactId),
+      // After deletion, check if current page becomes empty
+      const remainingContacts = contacts.filter(
+        (contact) => (contact.id || contact._id) !== contactId,
       );
+
+      setContacts(remainingContacts);
       setFilteredContacts(
         filteredContacts.filter(
           (contact) => (contact.id || contact._id) !== contactId,
         ),
       );
+
+      // If page becomes empty and not on first page, go back one page
+      if (remainingContacts.length === 0 && currentPage > 1) {
+        const prevPage = currentPage - 1;
+        setCurrentPage(prevPage);
+        const params = { ...searchParams, page: prevPage };
+        fetchContacts(params);
+      }
 
       console.log("Contact deleted successfully");
     } catch (error) {
@@ -536,23 +536,56 @@ const ContactUs = () => {
 
               <div className="contact-table-footer">
                 <div className="contact-pagination-info">
-                  Showing {filteredContacts.length} of {totalContacts} contacts
-                  {searchParams.page > 1 &&
-                    ` (Page ${searchParams.page} of ${totalPages})`}
+                  {/* <span>
+                    Showing {filteredContacts.length} of {totalContacts}{" "}
+                    contacts
+                    {totalPages > 1 &&
+                      ` (Page ${currentPage} of ${totalPages})`}
+                  </span> */}
                 </div>
                 <div className="contact-pagination-controls">
                   <button
                     className="contact-pagination-btn"
                     onClick={handlePrevPage}
-                    disabled={currentPage <= 1 || isDeleting}
+                    disabled={currentPage <= 1 || isDeleting || loading}
                   >
                     Previous
                   </button>
-                  <span className="contact-page-number">{currentPage}</span>
+
+                  {/* Optional: Add page numbers for better navigation */}
+                  {totalPages > 1 && (
+                    <div className="contact-page-numbers">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1)
+                        .filter(
+                          (page) =>
+                            page === 1 ||
+                            page === totalPages ||
+                            (page >= currentPage - 1 &&
+                              page <= currentPage + 1),
+                        )
+                        .map((page, index, array) => (
+                          <React.Fragment key={page}>
+                            {index > 0 && array[index - 1] !== page - 1 && (
+                              <span className="contact-page-dots">...</span>
+                            )}
+                            <button
+                              className={`contact-page-number ${currentPage === page ? "contact-page-active" : ""}`}
+                              onClick={() => handlePageChange(page)}
+                              disabled={isDeleting || loading}
+                            >
+                              {page}
+                            </button>
+                          </React.Fragment>
+                        ))}
+                    </div>
+                  )}
+
                   <button
                     className="contact-pagination-btn"
                     onClick={handleNextPage}
-                    disabled={currentPage >= totalPages || isDeleting}
+                    disabled={
+                      currentPage >= totalPages || isDeleting || loading
+                    }
                   >
                     Next
                   </button>

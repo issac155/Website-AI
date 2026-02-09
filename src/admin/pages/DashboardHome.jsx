@@ -1,25 +1,15 @@
 // Dashboard.js
 import React, { useEffect, useState } from "react";
 import {
-  faBars,
-  faTimes,
-  faHome,
   faEnvelope,
   faUsers,
   faChartBar,
-  faCog,
-  faSignOutAlt,
   faBell,
-  faUser,
-  faSearch,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import "../style/DashboardHome.css";
 
-// Components
-import ContactUs from "./ContactUs";
-import ContactView from "./ContactView";
 import Sidebar from "../components/layout/Sidebar";
 import Header from "../components/layout/Header";
 import { getDashboard } from "../../services/dashboardservice";
@@ -124,7 +114,7 @@ const DashboardHome = () => {
         <div className="dashboard-stat-card green">
           <div className="dashboard-stat-content">
             <h3>{loading ? "..." : `${stats.responseRate}%`}</h3>
-            <p>Response </p>
+            <p>Response Rate</p>
           </div>
           <FontAwesomeIcon icon={faChartBar} className="dashboard-stat-icon" />
         </div>
@@ -182,9 +172,9 @@ const DashboardHome = () => {
                       {/* Changed from createdAt to created_at */}
                       <td>
                         <span
-                          className={`status-badge status-${contact.isRead === 1 ? "read" : "pending"}`}
+                          className={`status-badge status-${contact.isRead === 1 ? "Responded" : "pending"}`}
                         >
-                          {contact.isRead === 1 ? "Read" : "Pending"}
+                          {contact.isRead === 1 ? "Responded" : "Pending"}
                         </span>
                       </td>
                     </tr>

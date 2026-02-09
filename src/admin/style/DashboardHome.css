@@ -538,3 +538,8 @@
     transform: none;
   }
 }
+.status-Responded {
+  /* Add this to match your dynamic class */
+  background: #d1f1e2;
+  color: #0c5460;
+}

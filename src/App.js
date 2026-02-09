@@ -1,24 +1,23 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import Home from "./pages/Home";
-import About from "./pages/About";
-import ServicesPage from "./pages/ServicesPage";
-import ProjectsPage from "./pages/ProjectsPage";
-import PartnersPage from "./pages/PartnersPage";
-import Contact from "./pages/Contact";
-import CompanyOverview from "./pages/CompanyOverview";
-import EngineeringApproach from "./pages/EngineeringApproach";
-import FacilityManagement from "./pages/FacilityManagement";
-import LightingSolarSolutions from "./pages/LightingSolarSolutions";
+import Home from "../src/web/pages/Home";
+import About from "../src/web/pages/About";
+import ServicesPage from "../src/web/pages/ServicesPage";
+import ProjectsPage from "../src/web/pages/ProjectsPage";
+import PartnersPage from "../src/web/pages/PartnersPage";
+import Contact from "../src/web/pages/Contact";
+import CompanyOverview from "../src/web/pages/CompanyOverview";
+import EngineeringApproach from "../src/web/pages/EngineeringApproach";
+import FacilityManagement from "../src/web/pages/FacilityManagement";
+import LightingSolarSolutions from "../src/web/pages/LightingSolarSolutions";
 
 import LoginPage from "./admin/pages/Login";
 
-import "./styles/App.css";
-import WebLayout from "./layouts/WebLayout";
+import "../src/web/styles/App.css";
+import WebLayout from "./web/layouts/WebLayout";
 import DashboardHome from "./admin/pages/DashboardHome";
 import ContactUs from "./admin/pages/ContactUs";
-import ContactView from "./admin/pages/ContactView";
 import ChangePassword from "./admin/pages/ChangePassword";
 import ProtectedRoute from "./ProtectedRoute";
 
@@ -107,7 +106,6 @@ function App() {
             </WebLayout>
           }
         />
-        {/* 🔐 ADMIN PANEL (NO HEADER / FOOTER) DashboardHome*/}
         <Route path="/admin" element={<LoginPage />} />
         <Route
           path="/dashboard"

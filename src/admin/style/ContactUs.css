@@ -673,3 +673,44 @@
   opacity: 0.6;
   pointer-events: none;
 }
+/* Pagination Page Numbers */
+.contact-page-numbers {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.contact-page-number {
+  min-width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.contact-page-number:hover:not(:disabled) {
+  border-color: #d4af37;
+  color: #d4af37;
+}
+
+/* 🔥 ACTIVE PAGE */
+.contact-page-active {
+  background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+  color: #fff !important;
+  border-color: #b8860b;
+  font-weight: 600;
+  cursor: default;
+  pointer-events: none;
+  box-shadow: 0 4px 10px rgba(212, 175, 55, 0.35);
+}
+
+/* Dots */
+.contact-page-dots {
+  padding: 0 6px;
+  color: #999;
+  font-weight: bold;
+}

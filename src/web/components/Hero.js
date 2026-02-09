@@ -1,10 +1,10 @@
 import React from "react";
-import mainImage from "../Images/Hero2.jpg";
-import electricalImage from "../../src/Images/Hero5.jpg";
-import hvcImage from "../../src/Images/Hero4.jpg";
+import mainImage from "../../Images/Hero2.jpg";
+import electricalImage from "../../Images/Hero5.jpg";
+import hvcImage from "../../Images/Hero4.jpg";
 
-import lightingImage from "../Images/Hero1.jpg";
-import smartBuildingImage from "../Images/Hero3.jpg";
+import lightingImage from "../../Images/Hero1.jpg";
+import smartBuildingImage from "../../Images/Hero3.jpg";
 const Hero = () => {
   return (
     <section className="hero" id="home">

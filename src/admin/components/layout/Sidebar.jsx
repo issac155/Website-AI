@@ -140,7 +140,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
     <aside className={`sidebar ${sidebarOpen ? "open" : "closed"}`}>
       <div className="sidebar-header">
         <div className="sidebar-logo">
-          <img src={Companylogo} />
+          <img src={Companylogo} alt="img" />
         </div>
       </div>
 
