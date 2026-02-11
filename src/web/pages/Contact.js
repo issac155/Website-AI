@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "../../web/styles/PageStyles.css";
 import {
   FaMapMarkerAlt,
@@ -13,6 +13,17 @@ const Contact = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const successRef = useRef(null);
+
+  useEffect(() => {
+    if (success && successRef.current) {
+      successRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+      successRef.current.focus(); // optional, for accessibility
+    }
+  }, [success]);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -200,6 +211,8 @@ const Contact = () => {
               {/* Display success message */}
               {success && (
                 <div
+                  ref={successRef}
+                  tabIndex="-1"
                   className="success-message"
                   style={{
                     backgroundColor: "#d4edda",
@@ -213,6 +226,7 @@ const Contact = () => {
                   Thank you! Your message has been sent successfully.
                 </div>
               )}
+
               <form className="contact-form" onSubmit={handleSubmit}>
                 <div className="form-row">
                   <div className="form-group">

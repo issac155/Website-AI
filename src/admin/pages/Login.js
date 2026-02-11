@@ -252,7 +252,9 @@ const Login = () => {
 
               <button type="submit" className="login-button" disabled={loading}>
                 {loading ? (
-                  <span className="spinner"></span>
+                  <>
+                    <i className="fas fa-spinner fa-spin"></i> loading...
+                  </>
                 ) : (
                   <>
                     Access Admin Panel
