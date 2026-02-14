@@ -35,7 +35,6 @@ const ChangePassword = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
   const userDetsils = getUserDetails();
-  console.log(userDetsils);
   // Password strength indicators
   const [passwordStrength, setPasswordStrength] = useState({
     length: false,
@@ -157,11 +156,10 @@ const ChangePassword = () => {
       });
       setErrors({});
     } catch (error) {
+      console.log(error);
       setMessage({
         type: "error",
-        text:
-          error.response?.data?.message ||
-          "Failed to change password. Please try again.",
+        text: error?.message || "Failed to change password. Please try again.",
       });
     } finally {
       setIsSubmitting(false);
@@ -240,13 +238,6 @@ const ChangePassword = () => {
               <div className="card-decoration"></div>
 
               <form onSubmit={handleSubmit} className="change-password-form">
-                {message.text && (
-                  <div className={`message-banner ${message.type}`}>
-                    <FiAlertCircle className="message-icon" />
-                    <span>{message.text}</span>
-                  </div>
-                )}
-
                 <div className="input-group">
                   <div className="input-label">
                     <FiLock />
@@ -354,7 +345,12 @@ const ChangePassword = () => {
                     <li>Change your password every 90 days</li>
                   </ul>
                 </div>
-
+                {message.text && (
+                  <div className={`message-banner ${message.type}`}>
+                    <FiAlertCircle className="message-icon" />
+                    <span>{message.text}</span>
+                  </div>
+                )}
                 <div className="form-actions">
                   <button
                     type="submit"

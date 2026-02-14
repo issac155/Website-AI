@@ -235,7 +235,7 @@ const Login = () => {
                     className="password-toggle"
                     onClick={togglePasswordVisibility}
                   >
-                    <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                    <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
                   </button>
                 </div>
                 {errors.password && (
